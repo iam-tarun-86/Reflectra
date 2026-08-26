@@ -15,6 +15,7 @@ import { AnalyticsModal } from "./components/AnalyticsModal";
 
 import { useWebSocket } from "./hooks/useWebSocket";
 import { useSpeech } from "./hooks/useSpeech";
+import { soundFX } from "./utils/audioFX";
 
 const MOOD_COLORS = {
   happy: "#10b981",
@@ -27,7 +28,8 @@ const MOOD_COLORS = {
 };
 
 export default function App() {
-  const [isStarted, setIsStarted] = useState(false);
+  const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const [isStarted, setIsStarted] = useState(urlParams?.get("autostart") === "true" || false);
 
   const { isConnected, fps, metadata, lastEchoBlob, sendFrame, sendDebugEmotion } = useWebSocket();
   const { isVoiceEnabled, isSpeaking, speak, toggleVoice } = useSpeech();
@@ -38,7 +40,7 @@ export default function App() {
   const [logs, setLogs] = useState([
     { time: "0.0", agent: "System", message: "EmotionLens Neural Dashboard initialized." },
   ]);
-  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(urlParams?.get("modal") === "true" || false);
   const [governorStatus, setGovernorStatus] = useState("IDLE");
   const [currentReflection, setCurrentReflection] = useState(
     "Welcome to EmotionLens. Express yourself and notice how your emotional patterns reflect in real time."
@@ -71,6 +73,7 @@ export default function App() {
       const isShift = mood.current !== mood.previous && mood.duration < 2.5;
 
       if (isShift) {
+        soundFX.playEmotionShift(mood.current);
         setShiftHistory((prev) => [
           ...prev.slice(-15),
           {
@@ -218,15 +221,23 @@ export default function App() {
               latency={llmLatency}
               model={llmModel}
               isSpeaking={isSpeaking}
+              dominantMood={dominantMood}
+              valence={metadata?.valence !== undefined ? metadata.valence : 0}
+              arousal={metadata?.arousal !== undefined ? metadata.arousal : 0.5}
+              stability={metadata?.mood?.stability || 0.8}
               onSpeakAgain={() => speak(currentReflection)}
             />
 
             <DemoDeck
               onInjectEmotion={(emo) => {
+                soundFX.playClick();
                 sendDebugEmotion(emo);
                 addLog("Debug", `Simulated emotion: ${emo.toUpperCase()}`);
               }}
-              onVoiceTest={() => speak(currentReflection)}
+              onVoiceTest={() => {
+                soundFX.playClick();
+                speak(currentReflection);
+              }}
             />
 
             <TelemetryConsole
