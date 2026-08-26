@@ -10,8 +10,9 @@ export function useWebSocket() {
   const wsRef = useRef(null);
   const echoSeqRef = useRef(0);
   const frameCountRef = useRef(0);
-  const fpsTimerRef = useRef(performance.now());
+  const fpsTimerRef = useRef(0);
   const isMountedRef = useRef(true);
+  const connectRef = useRef(null);
 
   const connect = useCallback(() => {
     if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) {
@@ -59,6 +60,9 @@ export function useWebSocket() {
       setLastEchoBlob({ blob, seq: mySeq });
 
       frameCountRef.current++;
+      if (!fpsTimerRef.current) {
+        fpsTimerRef.current = performance.now();
+      }
       const elapsed = (performance.now() - fpsTimerRef.current) / 1000;
       if (elapsed >= 1.0) {
         setFps((frameCountRef.current / elapsed).toFixed(1));
@@ -72,7 +76,9 @@ export function useWebSocket() {
       setIsConnected(false);
       setStatusText("Disconnected — Reconnecting...");
       setTimeout(() => {
-        if (isMountedRef.current) connect();
+        if (isMountedRef.current && connectRef.current) {
+          connectRef.current();
+        }
       }, 2000);
     };
 
@@ -84,7 +90,9 @@ export function useWebSocket() {
   }, []);
 
   useEffect(() => {
+    connectRef.current = connect;
     isMountedRef.current = true;
+    fpsTimerRef.current = performance.now();
     connect();
     return () => {
       isMountedRef.current = false;

@@ -40,7 +40,9 @@ class BiometricAudioFX {
       gain.connect(this.ctx.destination);
       osc.start();
       osc.stop(this.ctx.currentTime + 0.03);
-    } catch (e) {}
+    } catch {
+      // AudioContext policy or playback error ignored
+    }
   }
 
   playPowerUp(stage = 1) {
@@ -72,7 +74,9 @@ class BiometricAudioFX {
 
       osc.start();
       osc.stop(this.ctx.currentTime + 0.28);
-    } catch (e) {}
+    } catch {
+      // AudioContext policy or playback error ignored
+    }
   }
 
   playScanLock() {
@@ -91,7 +95,9 @@ class BiometricAudioFX {
       gain.connect(this.ctx.destination);
       osc.start();
       osc.stop(this.ctx.currentTime + 0.09);
-    } catch (e) {}
+    } catch {
+      // AudioContext policy or playback error ignored
+    }
   }
 
   playEmotionShift(mood = "neutral") {
@@ -122,7 +128,9 @@ class BiometricAudioFX {
         osc.start(this.ctx.currentTime + i * 0.03);
         osc.stop(this.ctx.currentTime + 0.35);
       });
-    } catch (e) {}
+    } catch {
+      // AudioContext policy or playback error ignored
+    }
   }
 }
 

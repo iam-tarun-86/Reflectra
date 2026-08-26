@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Sparkles, Brain, Eye, Compass, Volume2, Zap, ArrowRight, Cpu } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Brain, Eye, Compass, Volume2, Zap, ArrowRight, Cpu } from "lucide-react";
 import { soundFX } from "../utils/audioFX";
 
 const BOOT_STAGES = [
@@ -24,11 +24,11 @@ export function WelcomeHero({ onStart }) {
     isBootingRef.current = isBooting;
   }, [isBooting]);
 
-  const triggerBoot = () => {
+  const triggerBoot = useCallback(() => {
     if (isBooting) return;
-    soundFX.playClick();
+    soundFX.playPowerUp(1);
     setIsBooting(true);
-  };
+  }, [isBooting]);
 
   // Keyboard navigation (Space or Enter)
   useEffect(() => {
@@ -40,7 +40,7 @@ export function WelcomeHero({ onStart }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isBooting]);
+  }, [triggerBoot]);
 
   // Boot sequence timer & stage progression
   useEffect(() => {

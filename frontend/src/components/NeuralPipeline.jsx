@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, Activity, Brain, ShieldAlert, MessageSquare, ArrowRight } from "lucide-react";
+import { Eye, Activity, Brain, ShieldAlert, MessageSquare } from "lucide-react";
 
 export function NeuralPipeline({
   isVisionActive = true,

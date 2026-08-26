@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Eye, Radio, Sparkles, Sliders } from "lucide-react";
+import React, { useRef, useEffect, useState } from "react";
+import { Eye } from "lucide-react";
 import { useFaceTracker } from "../hooks/useFaceTracker";
 
 const MOOD_COLORS = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Download, BarChart2, Sparkles } from "lucide-react";
 
 export function AnalyticsModal({
@@ -13,7 +13,6 @@ export function AnalyticsModal({
   onSpeak,
 }) {
   const [closingObservation, setClosingObservation] = useState("Analyzing session patterns with local LLM...");
-  const [isFetchingSummary, setIsFetchingSummary] = useState(false);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -26,7 +25,6 @@ export function AnalyticsModal({
     hasFetchedRef.current = true;
 
     let isMounted = true;
-    setIsFetchingSummary(true);
     setClosingObservation("Synthesizing session reflection with local LLM...");
 
     async function fetchSummary() {
@@ -71,8 +69,6 @@ export function AnalyticsModal({
               : "A serene and observant session — thank you for exploring REFLECTRA."
           );
         }
-      } finally {
-        if (isMounted) setIsFetchingSummary(false);
       }
     }
 
@@ -174,7 +170,7 @@ export function AnalyticsModal({
             <span>AI Mirror Closing Observation</span>
           </div>
           <p className="text-sm italic text-slate-200 leading-relaxed">
-            "{closingObservation}"
+            &ldquo;{closingObservation}&rdquo;
           </p>
         </div>
 

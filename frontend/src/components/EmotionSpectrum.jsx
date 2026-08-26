@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart2, Zap, Clock, ShieldCheck } from "lucide-react";
+import { BarChart2, Clock } from "lucide-react";
 
 const EMOTIONS = [
   { key: "happy", label: "Happy", color: "#10b981" },

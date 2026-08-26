@@ -1,5 +1,5 @@
 import React from "react";
-import { MessageSquare, Volume2, Sparkles } from "lucide-react";
+import { Volume2, Sparkles } from "lucide-react";
 import { LivingEmotionOrb } from "./LivingEmotionOrb";
 
 export function SpokenReflection({
@@ -57,7 +57,7 @@ export function SpokenReflection({
 
       {/* Quote Display */}
       <div className="relative pl-3.5 border-l-2 border-purple-400 text-sm md:text-base font-medium italic text-slate-100 leading-relaxed bg-slate-950/40 p-3 rounded-r-xl border border-white/[0.04]">
-        "{text}"
+        &ldquo;{text}&rdquo;
       </div>
 
       {/* Footer Info */}

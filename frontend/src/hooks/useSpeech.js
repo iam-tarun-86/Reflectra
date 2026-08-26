@@ -33,7 +33,7 @@ export function useSpeech() {
       if (!isVoiceEnabled || !synthRef.current) return;
       synthRef.current.cancel(); // Stop prior speech
 
-      const cleanText = (text || "").replace(/[\[\]\(\)\*\"]/g, "").trim();
+      const cleanText = (text || "").replace(/[()[\]*"]/g, "").trim();
       if (!cleanText) return;
 
       const utterance = new SpeechSynthesisUtterance(cleanText);

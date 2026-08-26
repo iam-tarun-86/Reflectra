@@ -35,6 +35,7 @@ export default function App() {
   const { isVoiceEnabled, isSpeaking, speak, toggleVoice } = useSpeech();
 
   const [sessionStartTime, setSessionStartTime] = useState(Date.now());
+  const [sessionSec, setSessionSec] = useState(0);
   const [timelineData, setTimelineData] = useState([]);
   const [shiftHistory, setShiftHistory] = useState([]);
   const [logs, setLogs] = useState([
@@ -54,8 +55,10 @@ export default function App() {
   const lastReactionKeyRef = useRef(null);
 
   const handleStart = useCallback(() => {
+    const now = Date.now();
     setIsStarted(true);
-    setSessionStartTime(Date.now());
+    setSessionStartTime(now);
+    setSessionSec(0);
     speak("Neural Mirror initialized. Welcome to REFLECTRA.");
   }, [speak]);
 
@@ -68,10 +71,12 @@ export default function App() {
   useEffect(() => {
     if (!metadata || !isStarted) return;
 
+    const timeSec = (Date.now() - sessionStartTime) / 1000;
+    setSessionSec(timeSec);
+
     // 1. Mood State & Timeline Point
     if (metadata.mood) {
       const mood = metadata.mood;
-      const timeSec = (Date.now() - sessionStartTime) / 1000;
       const isShift = lastHandledMoodRef.current !== null && lastHandledMoodRef.current !== mood.current;
 
       if (isShift) {
@@ -223,7 +228,7 @@ export default function App() {
             <NeuralPipeline
               isVisionActive={isConnected}
               stateStability={metadata?.mood?.stability || 0}
-              contextSessionSec={metadata?.session_duration || (Date.now() - sessionStartTime) / 1000}
+              contextSessionSec={metadata?.session_duration || sessionSec}
               governorStatus={governorStatus}
               llmLatency={llmLatency}
             />
@@ -269,7 +274,7 @@ export default function App() {
       <AnalyticsModal
         isOpen={isSummaryOpen}
         onClose={() => setIsSummaryOpen(false)}
-        sessionDuration={(Date.now() - sessionStartTime) / 1000}
+        sessionDuration={metadata?.session_duration || sessionSec}
         totalReactions={metadata?.total_reactions || 0}
         dominantMood={dominantMood}
         shiftHistory={shiftHistory}

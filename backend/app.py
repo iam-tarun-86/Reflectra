@@ -57,17 +57,6 @@ async def health():
     return {"status": "healthy"}
 
 
-@app.post("/debug/trigger/{emotion}")
-async def debug_trigger(emotion: str):
-    """Inject a fake mood for testing Governor without real face."""
-    try:
-        emo = Emotion(emotion.lower())
-    except ValueError:
-        return {"error": f"unknown emotion {emotion}", "valid": [e.value for e in Emotion]}
-    fake = MoodState(current=emo, previous=Emotion.NEUTRAL, trend=MoodTrend.STABLE, duration=2.0, stability=0.8)
-    return {"injected": fake.current.value, "hint": "Use the Frontend Test button for live injection"}
-
-
 @app.post("/session/summary")
 async def session_summary(payload: dict, request: Request = None):
     """
