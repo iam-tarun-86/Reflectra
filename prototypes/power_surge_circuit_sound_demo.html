@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REFLECTRA — Center Core Design & Power Surge Demo</title>
+  <title>REFLECTRA — Prismatic Liquid Hybrid Core & Circuit Power Surge Demo</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
@@ -13,15 +13,9 @@
     @keyframes spin-cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes spin-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
     
-    @keyframes prism-pulse {
+    @keyframes hybrid-pulse {
       0%, 100% { filter: drop-shadow(0 0 25px rgba(244,63,94,0.6)) drop-shadow(0 0 45px rgba(56,189,248,0.6)); transform: scale(1); }
-      50%      { filter: drop-shadow(0 0 50px rgba(244,63,94,0.9)) drop-shadow(0 0 85px rgba(56,189,248,0.9)); transform: scale(1.06); }
-    }
-
-    @keyframes reticle-scan {
-      0%   { transform: rotate(0deg) scale(1); opacity: 0.8; }
-      50%  { transform: rotate(180deg) scale(1.08); opacity: 1; }
-      100% { transform: rotate(360deg) scale(1); opacity: 0.8; }
+      50%      { filter: drop-shadow(0 0 50px rgba(244,63,94,0.95)) drop-shadow(0 0 85px rgba(56,189,248,0.95)); transform: scale(1.04); }
     }
 
     @keyframes screen-shake-subtle {
@@ -42,8 +36,7 @@
     .spin-slow    { animation: spin-cw 22s linear infinite; }
     .spin-reverse { animation: spin-ccw 14s linear infinite; }
     .spin-fast    { animation: spin-cw 3.5s linear infinite; }
-    .prism-glow   { animation: prism-pulse 2.2s ease-in-out infinite; }
-    .reticle-spin { animation: reticle-scan 8s linear infinite; }
+    .hybrid-glow  { animation: hybrid-pulse 2.2s ease-in-out infinite; }
     .shake-subtle { animation: screen-shake-subtle 0.12s ease-in-out infinite; }
     .shake-intense { animation: screen-shake-intense 0.08s ease-in-out infinite; }
 
@@ -77,17 +70,14 @@
     <div class="w-full flex items-center justify-between p-1.5 rounded-2xl bg-slate-900/90 border border-white/[0.15] backdrop-blur-xl shadow-2xl text-xs font-bold font-mono">
       <span class="px-3 text-slate-400 uppercase tracking-wider hidden sm:inline">CENTER CORE:</span>
       <div class="flex flex-wrap gap-1 flex-1 justify-end">
-        <button onclick="switchCore('prism')" id="btn-prism" class="core-tab px-3 py-1.5 rounded-xl transition-all duration-200 bg-gradient-to-r from-rose-500 to-sky-500 text-white shadow-lg flex items-center gap-1.5 cursor-pointer">
-          <span>🔮</span> <span>Prismatic Iris</span>
+        <button onclick="switchCore('hybrid')" id="btn-hybrid" class="core-tab px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-gradient-to-r from-rose-500 via-purple-500 to-sky-500 text-white shadow-lg flex items-center gap-1.5 cursor-pointer">
+          <span>✨</span> <span>Prismatic Liquid Hybrid</span>
+        </button>
+        <button onclick="switchCore('prism')" id="btn-prism" class="core-tab px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center gap-1.5 cursor-pointer">
+          <span>🔮</span> <span>Prismatic Iris (Opt 1)</span>
         </button>
         <button onclick="switchCore('orb')" id="btn-orb" class="core-tab px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center gap-1.5 cursor-pointer">
-          <span>🧠</span> <span>Living Emotion Orb</span>
-        </button>
-        <button onclick="switchCore('reticle')" id="btn-reticle" class="core-tab px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center gap-1.5 cursor-pointer">
-          <span>🎯</span> <span>Biometric Reticle</span>
-        </button>
-        <button onclick="switchCore('vector')" id="btn-vector" class="core-tab px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center gap-1.5 cursor-pointer">
-          <span>⚡</span> <span>Quantum Fusion</span>
+          <span>🧠</span> <span>Living Orb (Opt 2)</span>
         </button>
       </div>
     </div>
@@ -101,7 +91,7 @@
           <span id="statusLed" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span class="text-rose-400 font-bold tracking-wider">REFLECTRA</span>
           <span class="text-slate-600">/</span>
-          <span id="coreNameTag" class="text-sky-400 font-bold tracking-wider">PRISMATIC OPTICAL IRIS</span>
+          <span id="coreNameTag" class="text-sky-400 font-bold tracking-wider">PRISMATIC LIQUID HYBRID</span>
         </div>
         <div class="flex items-center gap-3 text-[11px] text-slate-400">
           <span id="voltageMeter" class="text-emerald-400 font-bold">120.0 V // STANDBY</span>
@@ -115,13 +105,13 @@
       <!-- ==================== DYNAMIC CENTER CORE DISPLAY ==================== -->
       <section aria-label="Center Core Display" class="relative flex items-center justify-center w-64 h-64 my-1">
         
-        <!-- Outermost Stator Ring with Magnetic Guides (Shared across all modes) -->
+        <!-- Outermost Stator Ring with Magnetic Guides (Shared) -->
         <svg id="outerStator" class="absolute inset-0 w-full h-full spin-slow pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
           <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.5" stroke-dasharray="6, 6" />
           <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(244, 63, 94, 0.6)" stroke-width="3" stroke-dasharray="20, 10" />
         </svg>
 
-        <!-- Counter-Rotating Middle Solenoid Rings -->
+        <!-- Counter-Rotating Rotor Solenoid Coils -->
         <svg id="innerRotor" class="absolute inset-2 w-60 h-60 spin-reverse pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
           <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5" stroke-dasharray="24, 12" />
           <g stroke-width="3">
@@ -137,9 +127,48 @@
         </svg>
 
         <!-- ------------------------------------------------------------- -->
-        <!-- CORE 1: PRISMATIC MIRROR IRIS (REFLECTRA Brand Identity) -->
+        <!-- CORE 0: THE HYBRID (PRISMATIC IRIS APERTURE + LIVING LIQUID ORB CORE) -->
         <!-- ------------------------------------------------------------- -->
-        <div id="core-prism-view" class="core-view relative w-36 h-36 flex items-center justify-center prism-glow transition-transform duration-300">
+        <div id="core-hybrid-view" class="core-view relative w-44 h-44 flex items-center justify-center hybrid-glow transition-transform duration-300">
+          
+          <!-- Outer Prismatic Hexagonal Diffraction Crystals (Option 1) -->
+          <svg id="hybridIrisSvg" class="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300" viewBox="0 0 160 160">
+            <defs>
+              <linearGradient id="hyRose" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fb7185" />
+                <stop offset="50%" stop-color="#f43f5e" />
+                <stop offset="100%" stop-color="#a855f7" />
+              </linearGradient>
+              <linearGradient id="hySky" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="50%" stop-color="#0284c7" />
+                <stop offset="100%" stop-color="#6366f1" />
+              </linearGradient>
+            </defs>
+
+            <!-- Outer Hexagonal Crystal Facets -->
+            <polygon points="80,10 140,45 140,115 80,150 20,115 20,45" fill="none" stroke="url(#hySky)" stroke-width="2.5" stroke-dasharray="10, 5" opacity="0.9" />
+            <polygon points="80,22 130,50 130,110 80,138 30,110 30,50" fill="none" stroke="url(#hyRose)" stroke-width="2" opacity="0.85" />
+
+            <!-- Expanding Prism Aperture Blades (Triangular Mirror Shards) -->
+            <g id="irisBlades" class="transition-transform duration-300" style="transform-origin: 80px 80px;">
+              <path d="M80,32 L115,80 L80,128 Z" fill="url(#hySky)" fill-opacity="0.28" stroke="#38bdf8" stroke-width="1.5" />
+              <path d="M80,32 L45,80 L80,128 Z" fill="url(#hyRose)" fill-opacity="0.28" stroke="#f43f5e" stroke-width="1.5" />
+              <line x1="80" y1="16" x2="80" y2="144" stroke="#ffffff" stroke-width="1" opacity="0.75" />
+              <line x1="16" y1="80" x2="144" y2="80" stroke="#ffffff" stroke-width="1" opacity="0.75" />
+            </g>
+          </svg>
+
+          <!-- Nested Inner Living Liquid Emotion Orb (Option 2) -->
+          <div class="relative w-24 h-24 flex items-center justify-center rounded-full overflow-hidden">
+            <canvas id="hybridOrbCanvas" class="w-full h-full"></canvas>
+          </div>
+        </div>
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- CORE 1: PRISMATIC MIRROR IRIS ALONE (Option 1) -->
+        <!-- ------------------------------------------------------------- -->
+        <div id="core-prism-view" class="core-view relative w-36 h-36 hidden flex items-center justify-center prism-glow transition-transform duration-300">
           <svg class="w-full h-full" viewBox="0 0 120 120">
             <defs>
               <linearGradient id="prismRose" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -160,88 +189,32 @@
               </radialGradient>
             </defs>
 
-            <!-- Outer Hexagonal Facets -->
             <polygon points="60,8 105,34 105,86 60,112 15,86 15,34" fill="none" stroke="url(#prismSky)" stroke-width="2.5" stroke-dasharray="8, 4" opacity="0.9" />
             <polygon points="60,16 98,38 98,82 60,104 22,82 22,38" fill="none" stroke="url(#prismRose)" stroke-width="2" opacity="0.8" />
-
-            <!-- Refractive Optical Shards (Triangular Mirror Blades) -->
             <path d="M60,24 L85,60 L60,96 Z" fill="url(#prismSky)" fill-opacity="0.25" stroke="#38bdf8" stroke-width="1.5" />
             <path d="M60,24 L35,60 L60,96 Z" fill="url(#prismRose)" fill-opacity="0.25" stroke="#f43f5e" stroke-width="1.5" />
-            
-            <!-- Horizontal & Vertical Laser Diffraction Needles -->
             <line x1="60" y1="12" x2="60" y2="108" stroke="#ffffff" stroke-width="1" opacity="0.7" />
             <line x1="12" y1="60" x2="108" y2="60" stroke="#ffffff" stroke-width="1" opacity="0.7" />
-
-            <!-- Center Optical Iris Aperture Pupil -->
             <circle cx="60" cy="60" r="20" fill="url(#irisAperture)" />
             <circle cx="60" cy="60" r="6" fill="#ffffff" filter="drop-shadow(0 0 8px #ffffff)" />
           </svg>
         </div>
 
         <!-- ------------------------------------------------------------- -->
-        <!-- CORE 2: LIVING EMOTION ORB (Direct Dashboard Pre-Cursor) -->
+        <!-- CORE 2: LIVING EMOTION ORB ALONE (Option 2) -->
         <!-- ------------------------------------------------------------- -->
         <div id="core-orb-view" class="core-view relative w-36 h-36 hidden flex items-center justify-center">
           <canvas id="livingOrbCanvas" class="w-full h-full"></canvas>
-        </div>
-
-        <!-- ------------------------------------------------------------- -->
-        <!-- CORE 3: BIOMETRIC RETICLE & FACE MESH SCANNER -->
-        <!-- ------------------------------------------------------------- -->
-        <div id="core-reticle-view" class="core-view relative w-36 h-36 hidden flex items-center justify-center">
-          <svg class="w-full h-full" viewBox="0 0 120 120">
-            <!-- Concentric Radar Range Circles -->
-            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(56,189,248,0.3)" stroke-width="1" stroke-dasharray="4, 4" />
-            <circle cx="60" cy="60" r="38" fill="none" stroke="rgba(244,63,94,0.4)" stroke-width="1.5" stroke-dasharray="16, 8" />
-            
-            <!-- Rotating Reticle Crosshairs -->
-            <g class="reticle-spin" style="transform-origin: 60px 60px;">
-              <path d="M60,18 L60,32 M60,88 L60,102 M18,60 L32,60 M88,60 L102,60" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" />
-              <!-- Cyber HUD Brackets [ + ] -->
-              <path d="M42,42 L42,34 L50,34" fill="none" stroke="#f43f5e" stroke-width="2" />
-              <path d="M78,42 L78,34 L70,34" fill="none" stroke="#f43f5e" stroke-width="2" />
-              <path d="M42,78 L42,86 L50,86" fill="none" stroke="#f43f5e" stroke-width="2" />
-              <path d="M78,78 L78,86 L70,86" fill="none" stroke="#f43f5e" stroke-width="2" />
-            </g>
-
-            <!-- Holographic Wireframe Facial Topology -->
-            <ellipse cx="60" cy="60" rx="16" ry="22" fill="rgba(168,85,247,0.15)" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3, 3" />
-            <circle cx="53" cy="54" r="2.5" fill="#38bdf8" />
-            <circle cx="67" cy="54" r="2.5" fill="#38bdf8" />
-            <path d="M55,70 Q60,74 65,70" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" />
-            <circle cx="60" cy="60" r="3" fill="#ffffff" />
-          </svg>
-        </div>
-
-        <!-- ------------------------------------------------------------- -->
-        <!-- CORE 4: QUANTUM FUSION (Arc Reactor + Prismatic + Vector Grid) -->
-        <!-- ------------------------------------------------------------- -->
-        <div id="core-vector-view" class="core-view relative w-36 h-36 hidden flex items-center justify-center">
-          <svg class="w-full h-full" viewBox="0 0 120 120">
-            <!-- 2D Russell Circumplex Vector Crosshair Axes -->
-            <line x1="60" y1="10" x2="60" y2="110" stroke="rgba(244,63,94,0.5)" stroke-width="1.5" stroke-dasharray="2, 2" />
-            <line x1="10" y1="60" x2="110" y2="60" stroke="rgba(56,189,248,0.5)" stroke-width="1.5" stroke-dasharray="2, 2" />
-            <text x="64" y="20" fill="#f43f5e" font-size="7" font-family="monospace" font-weight="bold">+AROUSAL</text>
-            <text x="75" y="56" fill="#38bdf8" font-size="7" font-family="monospace" font-weight="bold">+VALENCE</text>
-            
-            <!-- Quantum Orbital Rings -->
-            <ellipse cx="60" cy="60" rx="42" ry="18" fill="none" stroke="#f43f5e" stroke-width="1.5" transform="rotate(35 60 60)" opacity="0.85" />
-            <ellipse cx="60" cy="60" rx="42" ry="18" fill="none" stroke="#38bdf8" stroke-width="1.5" transform="rotate(-35 60 60)" opacity="0.85" />
-            
-            <!-- Central Prismatic Plasma Bead -->
-            <circle cx="60" cy="60" r="16" fill="url(#prismRose)" filter="drop-shadow(0 0 12px #c084fc)" />
-            <circle cx="60" cy="60" r="6" fill="#ffffff" />
-          </svg>
         </div>
       </section>
 
       <!-- Title & Core Description -->
       <div class="flex flex-col gap-1.5">
         <h1 id="coreTitle" class="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
-          PRISMATIC OPTICAL IRIS
+          PRISMATIC LIQUID HYBRID
         </h1>
         <p id="coreDesc" class="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
-          Reflectra's custom multi-faceted prism mirror emblem. Diffraction crystal facets focus neural tensor frequencies into a pure optical singularity.
+          The ultimate synergy: Reflectra's faceted optical mirror aperture encapsulating the living, breathing Hume-style emotion orb at its center.
         </p>
       </div>
 
@@ -270,7 +243,7 @@
         </button>
 
         <span class="text-[11px] text-slate-500 font-mono">
-          🔊 REAL-TIME PROCEDURAL AUDIO SYNTHESIZER ACTIVE
+          🔊 CONTINUOUS TRANSFORMER CHARGE & SPARK AUDIO ACTIVE
         </span>
       </div>
 
@@ -352,8 +325,8 @@
           subOsc.type = "sine";
           subOsc.frequency.setValueAtTime(50, now);
           subOsc.frequency.linearRampToValueAtTime(85, endTime);
-          subGain.gain.setValueAtTime(0.2, now);
-          subGain.gain.linearRampToValueAtTime(0.35, endTime);
+          subGain.gain.setValueAtTime(0.22, now);
+          subGain.gain.linearRampToValueAtTime(0.38, endTime);
           subOsc.connect(subGain);
           subGain.connect(this.ctx.destination);
           subOsc.start(now);
@@ -528,6 +501,10 @@
     const rainCanvas = document.getElementById("rainCanvas");
     const circuitCanvas = document.getElementById("circuitCanvas");
     const livingOrbCanvas = document.getElementById("livingOrbCanvas");
+    const hybridOrbCanvas = document.getElementById("hybridOrbCanvas");
+    const hybridIrisSvg = document.getElementById("hybridIrisSvg");
+    const irisBlades = document.getElementById("irisBlades");
+
     const mainCard = document.getElementById("mainCard");
     const igniteBtn = document.getElementById("igniteBtn");
     const soundToggleBtn = document.getElementById("soundToggleBtn");
@@ -554,10 +531,16 @@
     let isSurging = false;
     let surgeProgress = 0;
     let surgeInterval = null;
-    let currentCoreMode = "prism";
+    let currentCoreMode = "hybrid";
 
     // --- ARCHETYPE SWITCHER LOGIC ---
     const CORE_DEFS = {
+      hybrid: {
+        tag: "PRISMATIC LIQUID HYBRID",
+        title: "PRISMATIC LIQUID HYBRID",
+        desc: "The ultimate synergy: Reflectra's faceted optical mirror aperture encapsulating the living, breathing Hume-style emotion orb at its center.",
+        color: "from-rose-500 via-purple-500 to-sky-500"
+      },
       prism: {
         tag: "PRISMATIC OPTICAL IRIS",
         title: "PRISMATIC OPTICAL IRIS",
@@ -569,18 +552,6 @@
         title: "LIVING EMOTION ORB",
         desc: "The 2D Hume-style harmonic liquid sphere found in the main dashboard. Morphs fluidly with emotional frequencies and speech acoustic resonance.",
         color: "from-purple-500 to-emerald-400"
-      },
-      reticle: {
-        tag: "BIOMETRIC RETICLE SCANNER",
-        title: "BIOMETRIC RETICLE HUD",
-        desc: "Vision AI target acquisition reticle. Locks facial topology landmarks, eye alignment vectors, and high-frequency biometric affective micro-expressions.",
-        color: "from-sky-400 to-indigo-500"
-      },
-      vector: {
-        tag: "QUANTUM VECTOR FUSION",
-        title: "QUANTUM VECTOR FUSION",
-        desc: "Multi-layered synergy: Integrates the 2D Russell Circumplex coordinate plane (Valence X vs Arousal Y) with rotating Arc Reactor solenoids.",
-        color: "from-rose-500 via-purple-500 to-sky-400"
       }
     };
 
@@ -588,21 +559,18 @@
       currentCoreMode = mode;
       soundSynth.playClick();
 
-      // Update tabs styling
       document.querySelectorAll(".core-tab").forEach(tab => {
         tab.className = "core-tab px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/[0.08] flex items-center gap-1.5 cursor-pointer";
       });
       const activeBtn = document.getElementById(`btn-${mode}`);
       if (activeBtn) {
-        activeBtn.className = "core-tab px-3 py-1.5 rounded-xl transition-all duration-200 bg-gradient-to-r from-rose-500 to-sky-500 text-white shadow-lg flex items-center gap-1.5 cursor-pointer";
+        activeBtn.className = "core-tab px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-gradient-to-r from-rose-500 via-purple-500 to-sky-500 text-white shadow-lg flex items-center gap-1.5 cursor-pointer";
       }
 
-      // Hide all views, show active
       document.querySelectorAll(".core-view").forEach(v => v.classList.add("hidden"));
       const activeView = document.getElementById(`core-${mode}-view`);
       if (activeView) activeView.classList.remove("hidden");
 
-      // Update metadata text
       const def = CORE_DEFS[mode];
       coreNameTag.innerText = def.tag;
       coreTitle.innerText = def.title;
@@ -620,6 +588,10 @@
       if (livingOrbCanvas) {
         livingOrbCanvas.width = 144 * dpr;
         livingOrbCanvas.height = 144 * dpr;
+      }
+      if (hybridOrbCanvas) {
+        hybridOrbCanvas.width = 96 * dpr;
+        hybridOrbCanvas.height = 96 * dpr;
       }
     }
     window.addEventListener("resize", resizeCanvases);
@@ -707,7 +679,6 @@
       const cy = window.innerHeight / 2;
       const time = timestamp * 0.003;
 
-      // 1. Draw Radiating Circuit Traces
       pcbTraces.forEach((trace) => {
         const x0 = cx + Math.cos(trace.baseAngle) * 90;
         const y0 = cy + Math.sin(trace.baseAngle) * 90;
@@ -764,7 +735,6 @@
         circuitCtx.stroke();
       });
 
-      // 2. Crackling Lightning Arcs (Active during surge)
       if (isSurging) {
         circuitCtx.strokeStyle = Math.random() > 0.5 ? "#f43f5e" : "#38bdf8";
         circuitCtx.lineWidth = 2 + Math.random() * 2.5;
@@ -791,7 +761,6 @@
         }
       }
 
-      // 3. Concentric Shockwaves
       for (let s = shockwaves.length - 1; s >= 0; s--) {
         const sw = shockwaves[s];
         sw.radius += sw.speed;
@@ -816,7 +785,51 @@
       circuitCtx.restore();
     }
 
-    // --- LIVING ORB 2D CANVAS RENDERER (For Core 2) ---
+    // --- HYBRID LIQUID ORB RENDERER ---
+    function drawHybridEmotionOrb(timestamp) {
+      if (currentCoreMode !== "hybrid" || !hybridOrbCanvas) return;
+      const ctx = hybridOrbCanvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, 96, 96);
+
+      const cx = 48;
+      const cy = 48;
+      const t = timestamp * 0.003;
+      const numPoints = 8;
+      const baseRadius = isSurging ? 28 : 22;
+      const deformation = isSurging ? 10 : 5;
+
+      ctx.beginPath();
+      for (let i = 0; i <= numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const wave = Math.sin(angle * 3 + t * (isSurging ? 7 : 2.5)) * deformation;
+        const r = baseRadius + wave;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      const grad = ctx.createRadialGradient(cx, cy, 3, cx, cy, 40);
+      grad.addColorStop(0, "#ffffff");
+      grad.addColorStop(0.35, isSurging ? "#fb7185" : "#c084fc");
+      grad.addColorStop(0.75, isSurging ? "#38bdf8" : "#3b82f6");
+      grad.addColorStop(1, "rgba(56, 189, 248, 0)");
+
+      ctx.fillStyle = grad;
+      ctx.shadowColor = isSurging ? "#f43f5e" : "#c084fc";
+      ctx.shadowBlur = isSurging ? 25 : 14;
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // --- LIVING ORB (STANDALONE) 2D CANVAS RENDERER ---
     function drawLivingEmotionOrb(timestamp) {
       if (currentCoreMode !== "orb" || !livingOrbCanvas) return;
       const ctx = livingOrbCanvas.getContext("2d");
@@ -864,6 +877,7 @@
     function render(timestamp) {
       drawMatrixRain();
       drawCircuitPowerSurge(timestamp);
+      drawHybridEmotionOrb(timestamp);
       drawLivingEmotionOrb(timestamp);
       requestAnimationFrame(render);
     }
@@ -910,6 +924,13 @@
         progressBar.style.width = `${surgeProgress}%`;
         progressPct.innerText = `${surgeProgress}%`;
 
+        // Iris Aperture expansion in Hybrid mode
+        if (irisBlades) {
+          const scale = 1.0 + (surgeProgress / 100) * 0.22;
+          const rotate = (surgeProgress / 100) * 45;
+          irisBlades.style.transform = `scale(${scale}) rotate(${rotate}deg)`;
+        }
+
         if (surgeProgress >= 60 && !mainCard.classList.contains("shake-intense")) {
           mainCard.classList.remove("shake-subtle");
           mainCard.classList.add("shake-intense");
@@ -954,6 +975,7 @@
             outerStator.classList.add("spin-slow");
             innerRotor.classList.remove("spin-fast");
             innerRotor.classList.add("spin-reverse");
+            if (irisBlades) irisBlades.style.transform = "scale(1) rotate(0deg)";
             isSurging = false;
           }, 1500);
         }
