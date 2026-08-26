@@ -41,7 +41,7 @@ It captures live webcam video, analyzes facial expressions at 5–10 Hz using De
 
 ## Frontend Architecture (React 18 + Vite + Tailwind CSS)
 * **`WelcomeHero.jsx`**: Dual-Canvas Power Surge onboarding screen with interlaced Red & Blue Matrix rain, expanding concentric shockwaves, crackling electric lightning arcs, right-angle PCB circuit traces, and Stark Arc Reactor with a pure glowing plasma singularity core.
-* **`BiometricMirror.jsx`**: 60 FPS video mirror with holographic JARVIS HUD 2.0 (smoothed face bounding box, eye reticles, leader-line telemetry tag, and ambient mood key-lighting).
+* **`BiometricMirror.jsx`**: 60 FPS video mirror with holographic Neural Reticle HUD (smoothed face bounding box, eye reticles, leader-line telemetry tag, and ambient mood key-lighting).
 * **`EmotionRadar.jsx`**: 2D Russell Circumplex vector field (Valence X vs Arousal Y) with a 30-second glowing comet trail trajectory.
 * **`LivingEmotionOrb.jsx`**: Canvas 2D liquid energy orb that fluidly deforms and pulses with speech audio and emotional valence/arousal (Hume AI style).
 * **`SpokenReflection.jsx`**: Glassmorphic reflection card embedding the Living Orb, LLM latency badge, model tag, and speech synthesizer.
@@ -70,7 +70,7 @@ It captures live webcam video, analyzes facial expressions at 5–10 Hz using De
 ### Session 12 (Next-Gen UI, Power Surge Bootloader & REFLECTRA Rebranding)
 - **Procedural Sound Synthesizer (`frontend/src/utils/audioFX.js`)**: Zero-asset procedural Web Audio API engine (`playPowerUp`, `playScanLock`, `playEmotionShift`, `playClick`).
 - **Living Emotion Orb (`LivingEmotionOrb.jsx`)**: 2D canvas fluid mesh with harmonic mood deformation.
-- **JARVIS Holographic Face HUD 2.0 (`BiometricMirror.jsx`)**: 60 FPS exponential moving average tracker with eye reticles and mood key-lighting.
+- **Holographic Neural Reticle HUD (`BiometricMirror.jsx`)**: 60 FPS exponential moving average tracker with eye reticles and mood key-lighting.
 - **Red & Blue Power Surge Bootloader (`WelcomeHero.jsx`)**: Dual Matrix rain + circuital shockwaves + Stark Arc Reactor with pure plasma core.
 - **Custom Brand Identity**: Built `ReflectraLogo.jsx` and `favicon.svg` with optical prism mirror aesthetics.
 - **Sanitization**: Removed all instances of `"Project #51"`, updated document titles, and unified branding to **`REFLECTRA`**.

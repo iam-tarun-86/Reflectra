@@ -126,7 +126,7 @@ export function BiometricMirror({
     };
   }, [lastEchoBlob]);
 
-  // Holographic JARVIS-Style HUD Canvas Drawing Loop
+  // Holographic Neural Reticle HUD Canvas Drawing Loop
   useEffect(() => {
     let animId = null;
     const canvas = hudCanvasRef.current;
@@ -305,7 +305,7 @@ export function BiometricMirror({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
           <Eye className="w-4 h-4 text-purple-400" />
-          <span>Biometric Mirror & JARVIS Face HUD 2.0</span>
+          <span>Biometric Mirror & Neural Reticle HUD</span>
         </div>
 
         {/* View Toggle */}

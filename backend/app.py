@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from agents.vision import VisionAgent
 from agents.state import EmotionalStateAgent
@@ -50,6 +50,15 @@ async def root():
     if (FRONTEND_DIST / "index.html").exists():
         return FileResponse(FRONTEND_DIST / "index.html")
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+@app.get("/favicon.svg")
+async def favicon():
+    if (FRONTEND_DIST / "favicon.svg").exists():
+        return FileResponse(FRONTEND_DIST / "favicon.svg", media_type="image/svg+xml")
+    if (FRONTEND_DIR / "public" / "favicon.svg").exists():
+        return FileResponse(FRONTEND_DIR / "public" / "favicon.svg", media_type="image/svg+xml")
+    return Response(status_code=404)
 
 
 @app.get("/health")
