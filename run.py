@@ -1,5 +1,5 @@
 """
-EmotionLens (Project #51) — Master Launcher & Health Check System
+REFLECTRA — Master Launcher & Health Check System
 Performs pre-flight checks, starts the FastAPI & React engine, opens the browser,
 and verifies clean teardown of both servers and ports upon exit.
 """
@@ -47,7 +47,7 @@ def kill_process_tree(pid: int):
 def preflight_checks():
     """Run diagnostics before starting servers."""
     print("\n" + "=" * 65)
-    print("  🪞 EMOTIONLENS — PRE-FLIGHT SYSTEM HEALTH CHECKS")
+    print("  🪞 REFLECTRA — PRE-FLIGHT SYSTEM HEALTH CHECKS")
     print("=" * 65)
 
     # 1. Check Python Environment

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber-Matrix Tactical Biometric Visor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'JetBrains Mono', monospace; }
+    @keyframes laser-sweep { 0% { top: 5%; opacity: 0.8; } 50% { top: 90%; opacity: 1; } 100% { top: 5%; opacity: 0.8; } }
+    @keyframes iris-rot { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .laser-beam { animation: laser-sweep 2.8s ease-in-out infinite; }
+    .iris-spin { animation: iris-rot 20s linear infinite; }
+  </style>
+</head>
+<body class="bg-[#020804] text-emerald-400 min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-emerald-500 selection:text-black">
+  
+  <!-- Canvas Matrix Rain Background -->
+  <canvas id="matrixCanvas" class="absolute inset-0 w-full h-full opacity-20 pointer-events-none"></canvas>
+  <div class="absolute w-[800px] h-[800px] rounded-full bg-emerald-500/15 blur-[180px] pointer-events-none"></div>
+
+  <!-- Master Biometric Visor Container -->
+  <div class="relative z-10 w-full max-w-2xl rounded-3xl bg-black/90 border-2 border-emerald-500/50 p-8 md:p-12 shadow-[0_0_100px_rgba(34,197,94,0.35)] flex flex-col items-center text-center gap-7 backdrop-blur-2xl">
+    
+    <!-- Top System Telemetry Bar -->
+    <div class="flex items-center justify-between w-full border-b border-emerald-500/30 pb-4 text-xs">
+      <div class="flex items-center gap-2 font-bold text-emerald-400">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="tracking-widest uppercase">TACTICAL MATRIX HUD // OPERATOR 01</span>
+      </div>
+      <div class="text-emerald-500 text-[11px]">
+        LANDMARKS: <span class="text-white font-bold">468 PTS</span> • TRACKING: <span class="text-amber-400 font-bold">LOCKED</span>
+      </div>
+    </div>
+
+    <!-- Center Tactical Biometric Reticle + 3D Wireframe Head -->
+    <div class="relative w-80 h-60 rounded-2xl bg-slate-950/80 border border-emerald-500/40 overflow-hidden flex items-center justify-center shadow-inner my-1">
+      
+      <!-- Moving Laser Scanline -->
+      <div class="absolute inset-x-0 h-1 bg-emerald-400 shadow-[0_0_15px_#22c55e] laser-beam z-20 pointer-events-none"></div>
+
+      <!-- Sci-Fi Corner Brackets -->
+      <div class="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-emerald-400 z-10"></div>
+      <div class="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-emerald-400 z-10"></div>
+      <div class="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-emerald-400 z-10"></div>
+      <div class="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-emerald-400 z-10"></div>
+
+      <!-- Rotating Optical Aperture Iris -->
+      <svg class="absolute w-52 h-52 iris-spin opacity-30 pointer-events-none" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="8, 6" />
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#4ade80" stroke-width="2" stroke-dasharray="20, 10" />
+      </svg>
+
+      <!-- 3D Wireframe Face Geometry -->
+      <svg class="relative w-36 h-44 z-10" viewBox="0 0 100 130">
+        <!-- Skull -->
+        <polygon points="50,12 80,32 90,65 75,105 50,125 25,105 10,65 20,32" fill="rgba(34,197,94,0.08)" stroke="#22c55e" stroke-width="1.5" />
+        <!-- Eyes with Target Reticles -->
+        <circle cx="36" cy="48" r="7" fill="none" stroke="#4ade80" stroke-width="1.2" />
+        <circle cx="36" cy="48" r="2" fill="#22c55e" />
+        <circle cx="64" cy="48" r="7" fill="none" stroke="#4ade80" stroke-width="1.2" />
+        <circle cx="64" cy="48" r="2" fill="#22c55e" />
+        <!-- Nose Bridge -->
+        <path d="M50,42 L50,72 L42,78 L58,78 Z" fill="none" stroke="#22c55e" stroke-width="1.2" />
+        <!-- Mouth -->
+        <path d="M30,95 Q50,110 70,95 Q50,90 30,95 Z" fill="none" stroke="#4ade80" stroke-width="1.5" />
+      </svg>
+
+      <!-- Floating Leader-Line Telemetry Readout -->
+      <div class="absolute bottom-2.5 left-3 z-20 flex items-center gap-2 bg-black/85 px-2.5 py-1 rounded border border-emerald-500/40 text-[10px] text-emerald-300">
+        <span>STAB: 98%</span> • <span>VALENCE: +0.72</span> • <span class="text-amber-400 font-bold">MATCH 99.8%</span>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white drop-shadow-[0_0_20px_rgba(34,197,94,0.8)]">
+        TACTICAL BIOMETRIC CONSTRUCT
+      </h1>
+      <p class="text-sm text-emerald-300 max-w-lg font-medium">
+        Unifying Matrix neural tensor streams with real-time 468-point facial biometric tracking & affective classification.
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-3 w-full max-w-md">
+      <button class="w-full py-4 rounded-2xl text-base font-black text-black bg-emerald-400 hover:bg-emerald-300 shadow-[0_0_40px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+        <span>👁️ JACK IN & INITIALIZE MIRROR</span>
+      </button>
+      <span class="text-xs text-emerald-500">PRESS <kbd class="px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-300">ENTER</kbd> TO ENGAGE NEURAL LINK</span>
+    </div>
+
+  </div>
+
+  <!-- Real-Time Matrix Rain Script -->
+  <script>
+    const mc = document.getElementById("matrixCanvas");
+    const mctx = mc.getContext("2d");
+    mc.width = window.innerWidth;
+    mc.height = window.innerHeight;
+    const mchars = "0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈ";
+    const mfontSize = 14;
+    const mcols = Math.floor(mc.width / mfontSize);
+    const mdrops = Array(mcols).fill(1);
+
+    function drawMatrix() {
+      mctx.fillStyle = "rgba(2, 8, 4, 0.09)";
+      mctx.fillRect(0, 0, mc.width, mc.height);
+      mctx.fillStyle = "#22c55e";
+      mctx.font = mfontSize + "px 'JetBrains Mono', monospace";
+      for (let i = 0; i < mdrops.length; i++) {
+        const text = mchars.charAt(Math.floor(Math.random() * mchars.length));
+        mctx.fillText(text, i * mfontSize, mdrops[i] * mfontSize);
+        if (mdrops[i] * mfontSize > mc.height && Math.random() > 0.975) mdrops[i] = 0;
+        mdrops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 35);
+  </script>
+</body>
+</html>

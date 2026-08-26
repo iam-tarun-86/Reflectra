@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Download, BarChart2, Clock, MessageSquare, Sparkles } from "lucide-react";
+import { X, Download, BarChart2, Sparkles } from "lucide-react";
 
 export function AnalyticsModal({
   isOpen,
@@ -53,7 +53,7 @@ export function AnalyticsModal({
           }
         } else {
           if (isMounted) {
-            setClosingObservation("A serene and observant session — thank you for exploring EmotionLens.");
+            setClosingObservation("A serene and observant session — thank you for exploring REFLECTRA.");
           }
         }
       } catch (err) {
@@ -61,7 +61,7 @@ export function AnalyticsModal({
           setClosingObservation(
             lastReflection && !lastReflection.includes("Welcome")
               ? lastReflection
-              : "A serene and observant session — thank you for exploring EmotionLens."
+              : "A serene and observant session — thank you for exploring REFLECTRA."
           );
         }
       } finally {
@@ -84,7 +84,7 @@ export function AnalyticsModal({
       encodeURIComponent(
         JSON.stringify(
           {
-            project: "EmotionLens (Project #51)",
+            project: "REFLECTRA (Adaptive Biometric Mirror)",
             timestamp: new Date().toISOString(),
             sessionDurationSec: Math.round(sessionDuration),
             dominantMood,
@@ -98,7 +98,7 @@ export function AnalyticsModal({
       );
     const downloadAnchor = document.createElement("a");
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `emotionlens_analytics_${Date.now()}.json`);
+    downloadAnchor.setAttribute("download", `reflectra_analytics_${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -106,17 +106,17 @@ export function AnalyticsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-fade-in">
-      <div className="relative w-full max-w-lg rounded-2xl bg-[#0c0f1a] border border-purple-500/30 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] flex flex-col gap-4 text-slate-100">
+      <div className="relative w-full max-w-lg rounded-2xl bg-[#0c0f1a] border border-rose-500/30 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] flex flex-col gap-4 text-slate-100">
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-base font-extrabold text-white">
-            <BarChart2 className="w-5 h-5 text-purple-400" />
+            <BarChart2 className="w-5 h-5 text-rose-400" />
             <span>Session Biometric Analytics</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white transition"
+            className="p-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-slate-400 hover:text-white transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -125,7 +125,7 @@ export function AnalyticsModal({
         {/* 3 Metric Tiles */}
         <div className="grid grid-cols-3 gap-2.5">
           <div className="p-3 rounded-xl bg-slate-900/60 border border-white/[0.06] text-center">
-            <span className="text-xl font-extrabold text-purple-400">{Math.round(sessionDuration)}s</span>
+            <span className="text-xl font-extrabold text-rose-400">{Math.round(sessionDuration)}s</span>
             <span className="text-[10px] text-slate-400 block uppercase mt-0.5">Duration</span>
           </div>
 
@@ -153,7 +153,7 @@ export function AnalyticsModal({
                 <div key={i}>
                   • <span className="text-slate-400">{s.time}s:</span>{" "}
                   <span className="font-bold text-slate-200">{s.from.toUpperCase()}</span> ➔{" "}
-                  <span className="font-bold text-purple-300">{s.to.toUpperCase()}</span>
+                  <span className="font-bold text-rose-300">{s.to.toUpperCase()}</span>
                 </div>
               ))
             )}
@@ -161,8 +161,8 @@ export function AnalyticsModal({
         </div>
 
         {/* AI Closing Observation */}
-        <div className="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 flex flex-col gap-1.5">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-purple-300 uppercase">
+        <div className="p-4 rounded-xl bg-slate-950/70 border border-rose-500/30 flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-rose-300 uppercase">
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Mirror Closing Observation</span>
           </div>
@@ -175,14 +175,14 @@ export function AnalyticsModal({
         <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-white/[0.06]">
           <button
             onClick={handleExportJson}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 transition cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export JSON</span>
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 shadow-md transition"
+            className="px-4 py-1.5 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-md transition cursor-pointer"
           >
             Resume Mirror
           </button>

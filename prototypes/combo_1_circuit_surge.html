@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stark-Matrix Circuital Power Surge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    
+    @keyframes spin-cw { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    
+    @keyframes core-pulse-glow { 
+      0%, 100% { filter: drop-shadow(0 0 30px #f43f5e) drop-shadow(0 0 60px #38bdf8); transform: scale(1); } 
+      50% { filter: drop-shadow(0 0 60px #f43f5e) drop-shadow(0 0 110px #38bdf8); transform: scale(1.1); } 
+    }
+
+    @keyframes circuit-flow {
+      0% { stroke-dashoffset: 100; opacity: 0.3; }
+      50% { opacity: 1; filter: drop-shadow(0 0 8px #38bdf8); }
+      100% { stroke-dashoffset: 0; opacity: 0.3; }
+    }
+
+    @keyframes surge-wave {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.8); opacity: 0; }
+    }
+
+    .spin-slow { animation: spin-cw 22s linear infinite; }
+    .spin-reverse { animation: spin-ccw 14s linear infinite; }
+    .core-glow { animation: core-pulse-glow 2.2s ease-in-out infinite; }
+    .surge-ring-1 { animation: surge-wave 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite; }
+    .surge-ring-2 { animation: surge-wave 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite 0.9s; }
+    .surge-ring-3 { animation: surge-wave 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite 1.8s; }
+    .circuit-pulse-blue { stroke-dasharray: 20, 10; animation: circuit-flow 3s linear infinite; }
+    .circuit-pulse-red { stroke-dasharray: 20, 10; animation: circuit-flow 3s linear infinite 1.5s; }
+  </style>
+</head>
+<body class="bg-[#030611] text-slate-100 min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-rose-500 selection:text-white">
+  
+  <!-- Canvas Dual Red & Blue Matrix Digital Rain Background -->
+  <canvas id="dualRain" class="absolute inset-0 w-full h-full opacity-20 pointer-events-none"></canvas>
+  
+  <!-- Massive Background Radial Circuital Surge Waves -->
+  <div class="absolute w-80 h-80 rounded-full border-2 border-sky-400/40 surge-ring-1 pointer-events-none"></div>
+  <div class="absolute w-80 h-80 rounded-full border-2 border-rose-500/40 surge-ring-2 pointer-events-none"></div>
+  <div class="absolute w-80 h-80 rounded-full border-2 border-cyan-300/40 surge-ring-3 pointer-events-none"></div>
+
+  <!-- Ambient Dual Glow Blurs -->
+  <div class="absolute w-[800px] h-[800px] rounded-full bg-rose-600/15 blur-[200px] pointer-events-none -top-20 -left-20"></div>
+  <div class="absolute w-[800px] h-[800px] rounded-full bg-sky-600/15 blur-[200px] pointer-events-none -bottom-20 -right-20"></div>
+
+  <!-- Full-Screen SVG Circuital Trace Network Radiating Outward -->
+  <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+    <!-- Top-Left Branching Circuit -->
+    <path d="M720,480 L620,380 L350,380 L280,260 L120,260" fill="none" stroke="#38bdf8" stroke-width="1.5" class="circuit-pulse-blue" />
+    <circle cx="350" cy="380" r="3" fill="#38bdf8" />
+    <circle cx="280" cy="260" r="4" fill="#38bdf8" />
+    
+    <!-- Top-Right Branching Circuit -->
+    <path d="M720,480 L820,380 L1080,380 L1180,220 L1340,220" fill="none" stroke="#f43f5e" stroke-width="1.5" class="circuit-pulse-red" />
+    <circle cx="1080" cy="380" r="3" fill="#f43f5e" />
+    <circle cx="1180" cy="220" r="4" fill="#f43f5e" />
+
+    <!-- Bottom-Left Branching Circuit -->
+    <path d="M720,480 L600,600 L400,600 L300,740 L100,740" fill="none" stroke="#f43f5e" stroke-width="1.5" class="circuit-pulse-red" />
+    <circle cx="400" cy="600" r="3" fill="#f43f5e" />
+    <circle cx="300" cy="740" r="4" fill="#f43f5e" />
+
+    <!-- Bottom-Right Branching Circuit -->
+    <path d="M720,480 L840,600 L1100,600 L1200,760 L1380,760" fill="none" stroke="#38bdf8" stroke-width="1.5" class="circuit-pulse-blue" />
+    <circle cx="1100" cy="600" r="3" fill="#38bdf8" />
+    <circle cx="1200" cy="760" r="4" fill="#38bdf8" />
+  </svg>
+
+  <!-- Master Stark-Matrix Card Container -->
+  <div class="relative z-10 w-full max-w-2xl rounded-3xl bg-slate-950/90 border border-white/[0.18] p-8 md:p-12 shadow-[0_0_120px_rgba(244,63,94,0.25),0_0_120px_rgba(56,189,248,0.25)] flex flex-col items-center text-center gap-8 backdrop-blur-3xl">
+    
+    <!-- Top Telemetry Header -->
+    <div class="flex items-center justify-between w-full border-b border-white/[0.1] pb-4 text-xs font-mono">
+      <div class="flex items-center gap-2 font-bold">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+        <span class="text-rose-400 tracking-wider uppercase">CIRCUITAL SURGE</span>
+        <span class="text-slate-500">•</span>
+        <span class="text-sky-400 tracking-wider uppercase">DUAL POWER MATRIX</span>
+      </div>
+      <div class="text-slate-400 text-[11px]">
+        OUTPUT: <span class="text-white font-bold">3.84 GW</span> • BUS: <span class="text-sky-400 font-bold">CHARGED</span>
+      </div>
+    </div>
+
+    <!-- Stark Arc Reactor with Pure Plasma Singularity (No Numbers) -->
+    <div class="relative flex items-center justify-center w-64 h-64 my-1">
+      
+      <!-- Outermost Cyan Solenoid Segment Ring -->
+      <svg class="absolute inset-0 w-full h-full spin-slow pointer-events-none" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.5" stroke-dasharray="6, 6" />
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(244, 63, 94, 0.55)" stroke-width="3" stroke-dasharray="18, 10" />
+      </svg>
+
+      <!-- Counter-Rotating Middle Turbine with Alternating Red & Blue Coils -->
+      <svg class="absolute inset-4 w-56 h-56 spin-reverse pointer-events-none" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.35)" stroke-width="2" stroke-dasharray="32, 12" />
+        <!-- 8 Alternating Red & Blue Magnetic Solenoid Pins -->
+        <g stroke-width="3.5">
+          <line x1="100" y1="16" x2="100" y2="30" stroke="#f43f5e" />
+          <line x1="100" y1="170" x2="100" y2="184" stroke="#f43f5e" />
+          <line x1="16" y1="100" x2="30" y2="100" stroke="#38bdf8" />
+          <line x1="170" y1="100" x2="184" y2="100" stroke="#38bdf8" />
+          <line x1="40" y1="40" x2="50" y2="50" stroke="#f43f5e" />
+          <line x1="160" y1="160" x2="150" y2="150" stroke="#f43f5e" />
+          <line x1="160" y1="40" x2="150" y2="50" stroke="#38bdf8" />
+          <line x1="40" y1="160" x2="50" y2="150" stroke="#38bdf8" />
+        </g>
+      </svg>
+
+      <!-- Center Pure Plasma Singularity Core (Zero Text / Pure Energy Flare) -->
+      <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-rose-600 via-purple-500 to-sky-400 shadow-[0_0_80px_#f43f5e,0_0_100px_#38bdf8] flex items-center justify-center core-glow">
+        <!-- Inner Incandescent White Shockwave Lens -->
+        <div class="w-14 h-14 rounded-full bg-white shadow-[0_0_30px_#ffffff,inset_0_0_15px_#38bdf8] flex items-center justify-center">
+          <div class="w-6 h-6 rounded-full bg-sky-200 shadow-[0_0_15px_#38bdf8]"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Title & Description -->
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
+        DUAL-CORE CIRCUITAL SURGE
+      </h1>
+      <p class="text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
+        Electromagnetic energy pulsing through neural PCB traces to power real-time multi-agent emotional reflection.
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-3 w-full max-w-md">
+      <button class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-[0_0_40px_rgba(244,63,94,0.5),0_0_40px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+        <span>⚡ ENGAGE POWER SURGE</span>
+      </button>
+      <span class="text-xs font-mono text-slate-400">HOLD <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-rose-300">SPACE</kbd> TO DISCHARGE POWER TO GRID</span>
+    </div>
+
+  </div>
+
+  <!-- Dual Red & Blue Matrix Rain Script -->
+  <script>
+    const c = document.getElementById("dualRain");
+    const ctx = c.getContext("2d");
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    const chars = "0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈ";
+    const fontSize = 14;
+    const cols = Math.floor(c.width / fontSize);
+    const drops = Array(cols).fill(1);
+
+    function renderDualRain() {
+      ctx.fillStyle = "rgba(3, 6, 17, 0.09)";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.font = fontSize + "px 'JetBrains Mono', monospace";
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillStyle = i % 2 === 0 ? "#f43f5e" : "#38bdf8";
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    setInterval(renderDualRain, 35);
+  </script>
+</body>
+</html>

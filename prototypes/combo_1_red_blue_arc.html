@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stark-Matrix Red & Blue Dual Arc Core — Power Surge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; margin:0; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    @keyframes spin-cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    @keyframes dual-flare {
+      0%, 100% { filter: drop-shadow(0 0 25px #f43f5e) drop-shadow(0 0 45px #38bdf8); transform: scale(1); }
+      50%      { filter: drop-shadow(0 0 50px #f43f5e) drop-shadow(0 0 90px #38bdf8); transform: scale(1.08); }
+    }
+    @keyframes core-breathe {
+      0%, 100% { box-shadow: 0 0 40px #f43f5e, 0 0 80px #38bdf8, 0 0 120px rgba(168,85,247,0.4); }
+      50%      { box-shadow: 0 0 60px #f43f5e, 0 0 100px #38bdf8, 0 0 160px rgba(168,85,247,0.6); }
+    }
+    .spin-slow    { animation: spin-cw 22s linear infinite; }
+    .spin-reverse { animation: spin-ccw 14s linear infinite; }
+    .dual-glow    { animation: dual-flare 2.5s ease-in-out infinite; }
+    .core-pulse   { animation: core-breathe 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-[#050711] text-slate-100 min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-rose-500 selection:text-white">
+
+  <!-- === LAYER 0: Dual Matrix Rain Background === -->
+  <canvas id="dualRain" class="absolute inset-0 w-full h-full opacity-25 pointer-events-none" style="z-index:0;"></canvas>
+
+  <!-- === LAYER 1: Power Surge Circuit Canvas (radiates from center) === -->
+  <canvas id="surgeCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index:1;"></canvas>
+
+  <!-- Ambient Red/Blue Glow Orbs -->
+  <div class="absolute w-[700px] h-[700px] rounded-full bg-rose-600/15 blur-[180px] pointer-events-none -top-20 -left-20" style="z-index:0;"></div>
+  <div class="absolute w-[700px] h-[700px] rounded-full bg-sky-600/15 blur-[180px] pointer-events-none -bottom-20 -right-20" style="z-index:0;"></div>
+
+  <!-- === MASTER CARD === -->
+  <div class="relative z-20 w-full max-w-2xl rounded-3xl bg-slate-950/90 border border-white/[0.15] p-8 md:p-12 shadow-[0_0_100px_rgba(244,63,94,0.25),0_0_100px_rgba(56,189,248,0.25)] flex flex-col items-center text-center gap-8 backdrop-blur-2xl">
+
+    <!-- Top Telemetry Header -->
+    <div class="flex items-center justify-between w-full border-b border-white/[0.1] pb-4 text-xs font-mono">
+      <div class="flex items-center gap-2 font-bold">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+        <span class="text-rose-400 tracking-wider uppercase">RED</span>
+        <span class="text-slate-500">•</span>
+        <span class="text-sky-400 tracking-wider uppercase">BLUE</span>
+        <span class="text-slate-400 font-normal">FUSION // MK-85</span>
+      </div>
+      <div class="text-slate-400 text-[11px]">
+        VALENCE: <span class="text-rose-400 font-bold">ACTIVE</span> • AROUSAL: <span class="text-sky-400 font-bold">SYNCED</span>
+      </div>
+    </div>
+
+    <!-- Arc Reactor Turbine (NO percentage — pure plasma core) -->
+    <div class="relative flex items-center justify-center w-64 h-64 my-1">
+
+      <!-- Outermost Blue Solenoid Segment Ring -->
+      <svg class="absolute inset-0 w-full h-full spin-slow pointer-events-none" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.5" stroke-dasharray="6, 6" />
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(244, 63, 94, 0.5)" stroke-width="3" stroke-dasharray="18, 10" />
+      </svg>
+
+      <!-- Counter-Rotating Middle Turbine with Alternating Red/Blue Coils -->
+      <svg class="absolute inset-4 w-56 h-56 spin-reverse pointer-events-none" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.3)" stroke-width="2" stroke-dasharray="32, 12" />
+        <g stroke-width="3">
+          <line x1="100" y1="18" x2="100" y2="30" stroke="#f43f5e" />
+          <line x1="100" y1="170" x2="100" y2="182" stroke="#f43f5e" />
+          <line x1="18" y1="100" x2="30" y2="100" stroke="#38bdf8" />
+          <line x1="170" y1="100" x2="182" y2="100" stroke="#38bdf8" />
+          <line x1="42" y1="42" x2="50" y2="50" stroke="#f43f5e" />
+          <line x1="158" y1="158" x2="150" y2="150" stroke="#f43f5e" />
+          <line x1="158" y1="42" x2="150" y2="50" stroke="#38bdf8" />
+          <line x1="42" y1="158" x2="50" y2="150" stroke="#38bdf8" />
+        </g>
+      </svg>
+
+      <!-- Center: Pure Plasma Singularity — NO percentage text -->
+      <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-rose-600 via-purple-600 to-sky-400 flex items-center justify-center dual-glow">
+        <div class="w-14 h-14 rounded-full bg-gradient-radial from-white/90 via-purple-300/60 to-transparent core-pulse" style="background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(168,85,247,0.4) 50%, transparent 80%);"></div>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
+        DUAL-CORE QUANTUM ARC
+      </h1>
+      <p class="text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
+        Stark-engineered Arc Reactor channeling dual Red & Blue Matrix neural tensor buses to illuminate subconscious affect.
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-3 w-full max-w-md">
+      <button class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-[0_0_40px_rgba(244,63,94,0.5),0_0_40px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+        <span>⚡ IGNITE DUAL FUSION CORE</span>
+      </button>
+      <span class="text-xs font-mono text-slate-400">HOLD <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-rose-300">SPACE</kbd> TO ENGAGE DUAL SYSTEM</span>
+    </div>
+
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- SCRIPTS                                                       -->
+  <!-- ============================================================= -->
+  <script>
+    /* ---- Dual Matrix Rain (background layer) ---- */
+    const c = document.getElementById("dualRain");
+    const ctx = c.getContext("2d");
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+    const chars = "0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈ";
+    const fontSize = 14;
+    const cols = Math.floor(c.width / fontSize);
+    const drops = Array(cols).fill(1);
+
+    function renderDualRain() {
+      ctx.fillStyle = "rgba(5, 7, 17, 0.09)";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.font = fontSize + "px 'JetBrains Mono', monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillStyle = i % 2 === 0 ? "#f43f5e" : "#38bdf8";
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > c.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    setInterval(renderDualRain, 35);
+
+    /* ============================================================= */
+    /* POWER SURGE: Circuit energy pulses from center of screen      */
+    /* radiating outward like a reactor power-up                     */
+    /* ============================================================= */
+    const sc = document.getElementById("surgeCanvas");
+    const sctx = sc.getContext("2d");
+    sc.width  = window.innerWidth;
+    sc.height = window.innerHeight;
+    const cx = sc.width / 2;
+    const cy = sc.height / 2;
+    const maxRadius = Math.sqrt(cx * cx + cy * cy);
+
+    // Surge ring class — expanding concentric energy wavefronts
+    class SurgeRing {
+      constructor() { this.reset(); }
+      reset() {
+        this.r = 0;
+        this.speed = 1.2 + Math.random() * 2.5;
+        this.lineWidth = 1 + Math.random() * 2;
+        this.isRed = Math.random() > 0.5;
+        this.opacity = 0.35 + Math.random() * 0.35;
+        this.dashLen = 8 + Math.random() * 30;
+        this.gapLen  = 4 + Math.random() * 20;
+      }
+      update() {
+        this.r += this.speed;
+        if (this.r > maxRadius + 50) this.reset();
+      }
+      draw(ctx) {
+        const fade = 1 - (this.r / maxRadius);
+        if (fade <= 0) return;
+        const color = this.isRed ? `rgba(244, 63, 94, ${this.opacity * fade})` : `rgba(56, 189, 248, ${this.opacity * fade})`;
+        ctx.beginPath();
+        ctx.arc(cx, cy, this.r, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = this.lineWidth * fade;
+        ctx.setLineDash([this.dashLen, this.gapLen]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    // Electric arc / lightning bolt from center outward
+    class ElectricArc {
+      constructor() { this.reset(); }
+      reset() {
+        this.angle    = Math.random() * Math.PI * 2;
+        this.length   = 80 + Math.random() * (maxRadius * 0.7);
+        this.life     = 0;
+        this.maxLife   = 12 + Math.random() * 18;
+        this.isRed    = Math.random() > 0.5;
+        this.segments = [];
+        this.generate();
+      }
+      generate() {
+        this.segments = [];
+        const steps = 12 + Math.floor(Math.random() * 20);
+        let px = cx, py = cy;
+        for (let i = 0; i < steps; i++) {
+          const frac = (i + 1) / steps;
+          const nx = cx + Math.cos(this.angle) * this.length * frac + (Math.random() - 0.5) * 40;
+          const ny = cy + Math.sin(this.angle) * this.length * frac + (Math.random() - 0.5) * 40;
+          this.segments.push({ x1: px, y1: py, x2: nx, y2: ny });
+          px = nx; py = ny;
+          // Branch
+          if (Math.random() > 0.7) {
+            const ba = this.angle + (Math.random() - 0.5) * 1.2;
+            const bl = 20 + Math.random() * 60;
+            const bx = nx + Math.cos(ba) * bl;
+            const by = ny + Math.sin(ba) * bl;
+            this.segments.push({ x1: nx, y1: ny, x2: bx, y2: by, branch: true });
+          }
+        }
+      }
+      update() {
+        this.life++;
+        if (this.life > this.maxLife) this.reset();
+      }
+      draw(ctx) {
+        const fade = 1 - (this.life / this.maxLife);
+        if (fade <= 0) return;
+        const base = this.isRed ? [244, 63, 94] : [56, 189, 248];
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur  = 15;
+        ctx.shadowColor = `rgba(${base[0]},${base[1]},${base[2]},0.6)`;
+        for (const seg of this.segments) {
+          const alpha = seg.branch ? fade * 0.4 : fade * 0.8;
+          ctx.strokeStyle = `rgba(${base[0]},${base[1]},${base[2]},${alpha})`;
+          ctx.lineWidth = seg.branch ? 0.8 : 1.5;
+          ctx.beginPath();
+          ctx.moveTo(seg.x1, seg.y1);
+          ctx.lineTo(seg.x2, seg.y2);
+          ctx.stroke();
+        }
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    // Circuit trace paths — horizontal/vertical grid lines emanating from center
+    class CircuitTrace {
+      constructor() { this.reset(); }
+      reset() {
+        this.progress = 0;
+        this.speed    = 2 + Math.random() * 4;
+        this.isRed    = Math.random() > 0.5;
+        this.opacity  = 0.15 + Math.random() * 0.25;
+        // Build a circuit-like path (right-angle segments from center outward)
+        this.points = [];
+        let px = cx, py = cy;
+        const totalSegs = 4 + Math.floor(Math.random() * 6);
+        const dir = Math.floor(Math.random() * 4); // 0=R,1=D,2=L,3=U
+        let d = dir;
+        for (let i = 0; i < totalSegs; i++) {
+          const segLen = 30 + Math.random() * 120;
+          let nx = px, ny = py;
+          if (d === 0) nx += segLen;
+          else if (d === 1) ny += segLen;
+          else if (d === 2) nx -= segLen;
+          else ny -= segLen;
+          this.points.push({ x1: px, y1: py, x2: nx, y2: ny });
+          px = nx; py = ny;
+          // Turn 90°
+          d = (d + (Math.random() > 0.5 ? 1 : 3)) % 4;
+        }
+        this.totalLen = this.points.reduce((s, p) => s + Math.sqrt((p.x2-p.x1)**2 + (p.y2-p.y1)**2), 0);
+      }
+      update() {
+        this.progress += this.speed;
+        if (this.progress > this.totalLen + 60) this.reset();
+      }
+      draw(ctx) {
+        const base = this.isRed ? [244, 63, 94] : [56, 189, 248];
+        let accum = 0;
+        for (const seg of this.points) {
+          const segLen = Math.sqrt((seg.x2 - seg.x1)**2 + (seg.y2 - seg.y1)**2);
+          const segStart = accum;
+          const segEnd   = accum + segLen;
+          accum += segLen;
+          if (this.progress < segStart) break; // haven't reached this segment
+          const drawFrac = Math.min(1, (this.progress - segStart) / segLen);
+          const ex = seg.x1 + (seg.x2 - seg.x1) * drawFrac;
+          const ey = seg.y1 + (seg.y2 - seg.y1) * drawFrac;
+          // Fade based on distance from draw-head
+          const distFromHead = this.progress - segEnd;
+          const fadeTail = distFromHead > 0 ? Math.max(0, 1 - distFromHead / 120) : 1;
+          ctx.strokeStyle = `rgba(${base[0]},${base[1]},${base[2]},${this.opacity * fadeTail})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(seg.x1, seg.y1);
+          ctx.lineTo(ex, ey);
+          ctx.stroke();
+          // Glowing head dot
+          if (drawFrac < 1 || (drawFrac === 1 && distFromHead < 30)) {
+            ctx.fillStyle = `rgba(${base[0]},${base[1]},${base[2]},${0.9 * fadeTail})`;
+            ctx.shadowBlur  = 12;
+            ctx.shadowColor = `rgba(${base[0]},${base[1]},${base[2]},0.8)`;
+            ctx.beginPath();
+            ctx.arc(ex, ey, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+          // Node junction dot
+          if (drawFrac >= 1) {
+            ctx.fillStyle = `rgba(${base[0]},${base[1]},${base[2]},${0.3 * fadeTail})`;
+            ctx.beginPath();
+            ctx.arc(seg.x2, seg.y2, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    // Instantiate surge elements
+    const surgeRings = Array.from({ length: 8 }, () => {
+      const r = new SurgeRing();
+      r.r = Math.random() * maxRadius; // stagger initial positions
+      return r;
+    });
+    const arcs = Array.from({ length: 6 }, () => {
+      const a = new ElectricArc();
+      a.life = Math.floor(Math.random() * a.maxLife);
+      return a;
+    });
+    const circuits = Array.from({ length: 16 }, () => {
+      const t = new CircuitTrace();
+      t.progress = Math.random() * t.totalLen;
+      return t;
+    });
+
+    function renderSurge() {
+      sctx.clearRect(0, 0, sc.width, sc.height);
+
+      // Central glow — the reactor core's ambient light
+      const coreGrad = sctx.createRadialGradient(cx, cy, 0, cx, cy, 220);
+      coreGrad.addColorStop(0, "rgba(168, 85, 247, 0.12)");
+      coreGrad.addColorStop(0.3, "rgba(244, 63, 94, 0.06)");
+      coreGrad.addColorStop(0.6, "rgba(56, 189, 248, 0.03)");
+      coreGrad.addColorStop(1, "transparent");
+      sctx.fillStyle = coreGrad;
+      sctx.fillRect(0, 0, sc.width, sc.height);
+
+      // Draw expanding surge rings
+      for (const ring of surgeRings) { ring.update(); ring.draw(sctx); }
+      // Draw electric arcs
+      for (const arc of arcs) { arc.update(); arc.draw(sctx); }
+      // Draw circuit traces
+      for (const ct of circuits) { ct.update(); ct.draw(sctx); }
+
+      requestAnimationFrame(renderSurge);
+    }
+    renderSurge();
+
+    // Resize handler
+    window.addEventListener("resize", () => {
+      c.width  = sc.width  = window.innerWidth;
+      c.height = sc.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>

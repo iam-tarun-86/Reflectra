@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tactical Biometric Retina Lock</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    @keyframes laser-sweep { 0% { top: 10%; opacity: 0.8; } 50% { top: 85%; opacity: 1; } 100% { top: 10%; opacity: 0.8; } }
+    @keyframes rotate-iris { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes mesh-pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; filter: drop-shadow(0 0 10px #10b981); } }
+    .laser-line { animation: laser-sweep 3s ease-in-out infinite; }
+    .iris-spin { animation: rotate-iris 25s linear infinite; }
+    .mesh-glow { animation: mesh-pulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-[#050e0a] text-slate-100 min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-emerald-500 selection:text-black">
+  
+  <!-- Cyberpunk Matrix Ambient Glow -->
+  <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#10b981 1px, transparent 1px); background-size: 28px 28px;"></div>
+  <div class="absolute w-[650px] h-[650px] rounded-full bg-emerald-500/15 blur-[160px] pointer-events-none"></div>
+
+  <!-- Tactical Card Container -->
+  <div class="relative z-10 w-full max-w-2xl rounded-3xl bg-slate-950/90 border border-emerald-500/40 p-8 md:p-12 shadow-[0_0_80px_rgba(16,185,129,0.25)] flex flex-col items-center text-center gap-7 backdrop-blur-2xl">
+    
+    <!-- Top Security Clearance Badge -->
+    <div class="flex items-center justify-between w-full border-b border-emerald-500/20 pb-4 text-xs font-mono">
+      <div class="flex items-center gap-2 text-emerald-400">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="font-bold tracking-widest uppercase">CLASSIFIED // NEURAL BIO-SCAN</span>
+      </div>
+      <div class="text-slate-400">
+        AZIMUTH: <span class="text-emerald-300 font-bold">342°</span> • TARGET: <span class="text-amber-400 font-bold">LOCKED</span>
+      </div>
+    </div>
+
+    <!-- Biometric Face & Retina Viewport -->
+    <div class="relative w-72 h-56 rounded-2xl bg-black/80 border-2 border-emerald-500/30 overflow-hidden flex items-center justify-center shadow-inner my-1">
+      
+      <!-- Moving Laser Scanline -->
+      <div class="absolute inset-x-0 h-1 bg-emerald-400 shadow-[0_0_15px_#10b981] laser-line z-20 pointer-events-none"></div>
+
+      <!-- Sci-Fi Corner Brackets -->
+      <div class="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-emerald-400 z-10"></div>
+      <div class="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-emerald-400 z-10"></div>
+      <div class="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-emerald-400 z-10"></div>
+      <div class="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-emerald-400 z-10"></div>
+
+      <!-- Rotating Optical Iris Diaphragm -->
+      <svg class="absolute w-44 h-44 iris-spin opacity-40 pointer-events-none" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6, 4" />
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="18, 12" />
+        <line x1="50" y1="0" x2="50" y2="100" stroke="#10b981" stroke-width="0.5" />
+        <line x1="0" y1="50" x2="100" y2="50" stroke="#10b981" stroke-width="0.5" />
+      </svg>
+
+      <!-- 3D Facial Landmark Mesh Wireframe -->
+      <svg class="relative w-32 h-40 mesh-glow z-10" viewBox="0 0 100 130">
+        <!-- Eyebrows -->
+        <path d="M20,35 Q35,30 45,35" fill="none" stroke="#10b981" stroke-width="1.5" />
+        <path d="M55,35 Q65,30 80,35" fill="none" stroke="#10b981" stroke-width="1.5" />
+        <!-- Eyes -->
+        <circle cx="32" cy="45" r="7" fill="none" stroke="#34d399" stroke-width="1.5" />
+        <circle cx="32" cy="45" r="2" fill="#34d399" />
+        <circle cx="68" cy="45" r="7" fill="none" stroke="#34d399" stroke-width="1.5" />
+        <circle cx="68" cy="45" r="2" fill="#34d399" />
+        <!-- Nose Bridge -->
+        <path d="M50,40 L50,70 L42,76 L58,76 Z" fill="none" stroke="#10b981" stroke-width="1.2" />
+        <!-- Mouth Contours -->
+        <path d="M30,95 Q50,110 70,95 Q50,90 30,95 Z" fill="none" stroke="#34d399" stroke-width="1.5" />
+        <!-- Jawline -->
+        <path d="M15,45 Q20,105 50,125 Q80,105 85,45" fill="none" stroke="#10b981" stroke-width="1" stroke-dasharray="4, 3" />
+      </svg>
+
+      <!-- Live Floating Target Telemetry Callout -->
+      <div class="absolute bottom-2.5 left-3 z-20 flex items-center gap-2 bg-black/80 px-2.5 py-1 rounded border border-emerald-500/40 text-[10px] font-mono text-emerald-300">
+        <span>LANDMARKS: 68 PTS</span> • <span>MATCH: 99.8%</span>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent">
+        TACTICAL BIOMETRIC AUTH
+      </h1>
+      <p class="text-sm text-slate-300 max-w-lg font-medium">
+        468-point facial topology triangulation & deep neural link verification.
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-3 w-full max-w-md">
+      <button class="w-full py-4 rounded-2xl text-base font-black text-slate-950 bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-200 hover:from-emerald-300 hover:to-white shadow-[0_0_40px_rgba(16,185,129,0.5)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+        <span>👁️ AUTHENTICATE & ENGAGE LINK</span>
+      </button>
+      <span class="text-xs font-mono text-slate-400">ALIGN RETINA TO SENSOR & PRESS <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-emerald-500/30 text-emerald-300">ENTER</kbd></span>
+    </div>
+
+  </div>
+</body>
+</html>

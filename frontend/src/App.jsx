@@ -38,12 +38,12 @@ export default function App() {
   const [timelineData, setTimelineData] = useState([]);
   const [shiftHistory, setShiftHistory] = useState([]);
   const [logs, setLogs] = useState([
-    { time: "0.0", agent: "System", message: "EmotionLens Neural Dashboard initialized." },
+    { time: "0.0", agent: "System", message: "REFLECTRA Neural Dashboard initialized." },
   ]);
   const [isSummaryOpen, setIsSummaryOpen] = useState(urlParams?.get("modal") === "true" || false);
   const [governorStatus, setGovernorStatus] = useState("IDLE");
   const [currentReflection, setCurrentReflection] = useState(
-    "Welcome to EmotionLens. Express yourself and notice how your emotional patterns reflect in real time."
+    "Welcome to REFLECTRA. Express yourself and notice how your emotional patterns reflect in real time."
   );
   const [llmLatency, setLlmLatency] = useState(null);
   const [llmModel, setLlmModel] = useState("Local LLM");
@@ -54,7 +54,7 @@ export default function App() {
   const handleStart = useCallback(() => {
     setIsStarted(true);
     setSessionStartTime(Date.now());
-    speak("Neural Mirror initialized. Welcome to EmotionLens.");
+    speak("Neural Mirror initialized. Welcome to REFLECTRA.");
   }, [speak]);
 
   const addLog = useCallback((agent, message) => {

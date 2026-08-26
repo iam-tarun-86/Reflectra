@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matrix Digital Rain Construct</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'JetBrains Mono', monospace; }
+    @keyframes rain-scroll { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+    @keyframes jack-pulse { 0%, 100% { filter: drop-shadow(0 0 20px #22c55e); transform: scale(1); } 50% { filter: drop-shadow(0 0 45px #22c55e) drop-shadow(0 0 70px #4ade80); transform: scale(1.08); } }
+    .jack-glow { animation: jack-pulse 2s ease-in-out infinite; }
+  </style>
+</head>
+<body class="bg-[#020703] text-emerald-400 min-h-screen flex items-center justify-center p-6 relative overflow-hidden selection:bg-emerald-500 selection:text-black">
+  
+  <!-- Canvas Digital Rain Background -->
+  <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none"></canvas>
+  <div class="absolute w-[800px] h-[800px] rounded-full bg-emerald-500/15 blur-[180px] pointer-events-none"></div>
+
+  <!-- Matrix Operator Console Container -->
+  <div class="relative z-10 w-full max-w-2xl rounded-3xl bg-black/90 border-2 border-emerald-500/50 p-8 md:p-12 shadow-[0_0_100px_rgba(34,197,94,0.35)] flex flex-col items-center text-center gap-8 backdrop-blur-2xl">
+    
+    <!-- Top Operator Telemetry Header -->
+    <div class="flex items-center justify-between w-full border-b border-emerald-500/30 pb-4 text-xs">
+      <div class="flex items-center gap-2 font-bold text-emerald-400">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="tracking-widest uppercase">NEBUCHADNEZZAR // CONSTRUCT v4.2</span>
+      </div>
+      <div class="text-emerald-500 text-[11px]">
+        CARRIER: <span class="text-white font-bold">2.4 GHz</span> • CODEC: <span class="text-emerald-300 font-bold">DEEPFACE_TENSOR</span>
+      </div>
+    </div>
+
+    <!-- Central Neural Jack-In Core -->
+    <div class="relative flex items-center justify-center w-64 h-64 my-1">
+      
+      <!-- Counter-Rotating Matrix Glyphs Ring -->
+      <svg class="absolute inset-0 w-full h-full animate-spin [animation-duration:20s] pointer-events-none" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="92" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="6, 8" />
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(34, 197, 94, 0.4)" stroke-width="2" stroke-dasharray="24, 12" />
+      </svg>
+
+      <!-- Inner Socket Crosshairs -->
+      <svg class="absolute inset-6 w-52 h-52 animate-spin [animation-duration:14s] [animation-direction:reverse] pointer-events-none" viewBox="0 0 200 200">
+        <polygon points="100,10 190,100 100,190 10,100" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="12, 6" />
+      </svg>
+
+      <!-- Center Blinding Emerald Jack Port -->
+      <div class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-emerald-700 via-emerald-500 to-white shadow-[0_0_60px_#22c55e] flex items-center justify-center jack-glow">
+        <div class="w-16 h-16 rounded-full bg-black border-2 border-emerald-400 flex flex-col items-center justify-center gap-0.5 shadow-inner">
+          <span class="text-xs font-black text-white tracking-widest">JACK</span>
+          <span class="text-[9px] font-bold text-emerald-400">ONLINE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Title & Description -->
+    <div class="flex flex-col gap-2">
+      <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white drop-shadow-[0_0_20px_rgba(34,197,94,0.8)]">
+        THE NEURAL CONSTRUCT
+      </h1>
+      <p class="text-sm text-emerald-300 max-w-lg font-medium leading-relaxed">
+        "You take the neural link—the story begins. You step into the mirror and see how deep your subconscious emotions go."
+      </p>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-3 w-full max-w-md">
+      <button class="w-full py-4 rounded-2xl text-base font-black text-black bg-emerald-400 hover:bg-emerald-300 shadow-[0_0_50px_rgba(34,197,94,0.8)] transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2">
+        <span>⚡ JACK INTO EMOTIONLENS</span>
+      </button>
+      <span class="text-xs text-emerald-500">PRESS <kbd class="px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-300">SPACE</kbd> OR <kbd class="px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-500/40 text-emerald-300">ENTER</kbd> TO TRANSMIT SIGNAL</span>
+    </div>
+
+  </div>
+
+  <!-- Matrix Digital Rain Canvas Script -->
+  <script>
+    const canvas = document.getElementById("rainCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const chars = "ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ1234567890ABCDEF";
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(2, 7, 3, 0.08)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#22c55e";
+      ctx.font = fontSize + "px 'JetBrains Mono', monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 35);
+  </script>
+</body>
+</html>
