@@ -28,6 +28,7 @@ logger = logging.getLogger("reflectra")
 app = FastAPI(title="Reflectra", description="An Adaptive AI Mirror — Multi-Agent Emotion Recognition")
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+FRONTEND_DIST = FRONTEND_DIR / "dist"
 LLM_BASE_URL = os.environ.get("REFLECTRA_LLM_URL", "http://localhost:8085/v1")
 LLM_MODEL = os.environ.get("REFLECTRA_LLM_MODEL", "gemma-4-e4b")
 
@@ -46,6 +47,8 @@ def check_token(request: Request) -> None:
 
 @app.get("/")
 async def root():
+    if (FRONTEND_DIST / "index.html").exists():
+        return FileResponse(FRONTEND_DIST / "index.html")
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
@@ -337,7 +340,9 @@ async def video_websocket(websocket: WebSocket):
                 pass
 
 
-# Serve frontend static files (JS, CSS, etc.)
+# Serve frontend static files (assets, JS, CSS, etc.)
+if (FRONTEND_DIST / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
 app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 
