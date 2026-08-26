@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REFLECTRA — Power Surge & Circuit Audio Ignition Demo</title>
+  <title>REFLECTRA — High-Voltage Circuit Power Surge & Cinematic Audio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
@@ -14,23 +14,31 @@
     @keyframes spin-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
     
     @keyframes core-breathe {
-      0%, 100% { box-shadow: 0 0 35px #f43f5e, 0 0 75px #38bdf8, 0 0 110px rgba(168,85,247,0.5); }
-      50%      { box-shadow: 0 0 65px #f43f5e, 0 0 110px #38bdf8, 0 0 180px rgba(168,85,247,0.8); }
+      0%, 100% { box-shadow: 0 0 35px #f43f5e, 0 0 75px #38bdf8, 0 0 110px rgba(168,85,247,0.5); transform: scale(1); }
+      50%      { box-shadow: 0 0 65px #f43f5e, 0 0 110px #38bdf8, 0 0 180px rgba(168,85,247,0.8); transform: scale(1.05); }
     }
-    
-    @keyframes screen-shake {
+
+    @keyframes screen-shake-subtle {
       0%, 100% { transform: translate(0, 0); }
-      20% { transform: translate(-3px, 2px); }
-      40% { transform: translate(3px, -2px); }
-      60% { transform: translate(-2px, -3px); }
-      80% { transform: translate(2px, 3px); }
+      25% { transform: translate(-2px, 1.5px); }
+      50% { transform: translate(2px, -1.5px); }
+      75% { transform: translate(-1.5px, -2px); }
+    }
+
+    @keyframes screen-shake-intense {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+      40% { transform: translate(4px, -3px) rotate(0.5deg); }
+      60% { transform: translate(-3px, -4px); }
+      80% { transform: translate(3px, 4px); }
     }
     
     .spin-slow    { animation: spin-cw 20s linear infinite; }
     .spin-reverse { animation: spin-ccw 12s linear infinite; }
-    .spin-fast    { animation: spin-cw 4s linear infinite; }
+    .spin-fast    { animation: spin-cw 3s linear infinite; }
     .core-pulse   { animation: core-breathe 2s ease-in-out infinite; }
-    .shaking      { animation: screen-shake 0.15s ease-in-out infinite; }
+    .shake-subtle { animation: screen-shake-subtle 0.12s ease-in-out infinite; }
+    .shake-intense { animation: screen-shake-intense 0.08s ease-in-out infinite; }
 
     /* Scanline overlay */
     .scanlines {
@@ -42,50 +50,50 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden select-none">
 
-  <!-- === LAYER 0: Background Canvas (Matrix Digital Rain) === -->
-  <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-30 pointer-events-none" style="z-index: 0;"></canvas>
+  <!-- === LAYER 0: Background Matrix Digital Rain === -->
+  <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-25 pointer-events-none" style="z-index: 0;"></canvas>
 
-  <!-- === LAYER 1: Power Surge Circuit Canvas (PCB Traces + Arcs + Shockwaves) === -->
+  <!-- === LAYER 1: Power Surge PCB Circuit Canvas (Copper Traces + Spark Arcs + Shockwaves) === -->
   <canvas id="circuitCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
 
   <!-- Scanline CRT Texture Overlay -->
   <div class="scanlines absolute inset-0 pointer-events-none opacity-40" style="z-index: 2;"></div>
 
-  <!-- Ambient Color Blooms -->
-  <div id="bloomRed" class="absolute w-[600px] h-[600px] rounded-full bg-rose-600/15 blur-[160px] pointer-events-none -top-24 -left-24 transition-opacity duration-500" style="z-index: 0;"></div>
-  <div id="bloomBlue" class="absolute w-[600px] h-[600px] rounded-full bg-sky-600/15 blur-[160px] pointer-events-none -bottom-24 -right-24 transition-opacity duration-500" style="z-index: 0;"></div>
+  <!-- Ambient Red/Cyan Blooms -->
+  <div id="bloomRed" class="absolute w-[600px] h-[600px] rounded-full bg-rose-600/15 blur-[160px] pointer-events-none -top-24 -left-24 transition-opacity duration-300" style="z-index: 0;"></div>
+  <div id="bloomBlue" class="absolute w-[600px] h-[600px] rounded-full bg-sky-600/15 blur-[160px] pointer-events-none -bottom-24 -right-24 transition-opacity duration-300" style="z-index: 0;"></div>
 
   <!-- === MASTER HUD CARD === -->
-  <main id="mainCard" class="relative z-10 w-full max-w-2xl rounded-3xl bg-slate-950/85 border border-white/[0.15] p-6 md:p-10 shadow-[0_0_80px_rgba(244,63,94,0.2),0_0_80px_rgba(56,189,248,0.2)] flex flex-col items-center text-center gap-7 backdrop-blur-2xl transition-all duration-300">
+  <main id="mainCard" class="relative z-10 w-full max-w-2xl rounded-3xl bg-slate-950/90 border border-white/[0.15] p-6 md:p-10 shadow-[0_0_80px_rgba(244,63,94,0.25),0_0_80px_rgba(56,189,248,0.25)] flex flex-col items-center text-center gap-6 backdrop-blur-2xl transition-all duration-200">
 
     <!-- Top Telemetry Header -->
     <header class="flex items-center justify-between w-full border-b border-white/[0.1] pb-3.5 text-xs font-mono">
       <div class="flex items-center gap-2">
-        <span id="statusLed" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="statusLed" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
         <span class="text-rose-400 font-bold tracking-wider">REFLECTRA</span>
         <span class="text-slate-600">/</span>
         <span class="text-sky-400 font-bold tracking-wider">CIRCUIT SURGE ENGINE</span>
       </div>
       <div class="flex items-center gap-3 text-[11px] text-slate-400">
         <span id="voltageMeter" class="text-emerald-400 font-bold">120.0 V // STANDBY</span>
-        <button id="soundToggleBtn" class="px-2 py-0.5 rounded bg-white/[0.08] hover:bg-white/[0.15] text-slate-300 transition flex items-center gap-1.5 cursor-pointer">
+        <button id="soundToggleBtn" class="px-2.5 py-1 rounded-md bg-white/[0.08] hover:bg-white/[0.15] text-slate-200 transition flex items-center gap-1.5 cursor-pointer border border-white/[0.1]">
           <span id="soundIcon">🔊</span>
-          <span id="soundLabel">AUDIO: ON</span>
+          <span id="soundLabel" class="font-bold">AUDIO: ON</span>
         </button>
       </div>
     </header>
 
     <!-- Center Arc Reactor Core -->
-    <section aria-label="Arc Reactor Core" class="relative flex items-center justify-center w-60 h-60 my-1">
+    <section aria-label="Arc Reactor Core" class="relative flex items-center justify-center w-56 h-56 my-1">
       
-      <!-- Outermost Stator Ring -->
-      <svg id="outerStator" class="absolute inset-0 w-full h-full spin-slow pointer-events-none transition-all duration-500" viewBox="0 0 200 200">
+      <!-- Outermost Stator Ring with Magnetic Guides -->
+      <svg id="outerStator" class="absolute inset-0 w-full h-full spin-slow pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.5" stroke-dasharray="6, 6" />
-        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(244, 63, 94, 0.55)" stroke-width="3" stroke-dasharray="20, 10" />
+        <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(244, 63, 94, 0.6)" stroke-width="3" stroke-dasharray="20, 10" />
       </svg>
 
-      <!-- Counter-Rotating Rotor with Magnetic Solenoid Coils -->
-      <svg id="innerRotor" class="absolute inset-4 w-52 h-52 spin-reverse pointer-events-none transition-all duration-500" viewBox="0 0 200 200">
+      <!-- Counter-Rotating Rotor with Alternating Solenoids -->
+      <svg id="innerRotor" class="absolute inset-3 w-50 h-50 spin-reverse pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.3)" stroke-width="2" stroke-dasharray="32, 12" />
         <g stroke-width="3.5">
           <line x1="100" y1="18" x2="100" y2="30" stroke="#f43f5e" />
@@ -99,48 +107,48 @@
         </g>
       </svg>
 
-      <!-- Singularity Plasma Core -->
-      <div id="plasmaCore" class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-rose-600 via-purple-600 to-sky-400 flex items-center justify-center core-pulse transition-transform duration-300">
-        <div class="w-16 h-16 rounded-full bg-gradient-radial from-white via-purple-200 to-transparent" style="background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(168,85,247,0.5) 45%, transparent 75%);"></div>
+      <!-- Pure Plasma Singularity Core -->
+      <div id="plasmaCore" class="relative w-28 h-28 rounded-full bg-gradient-to-tr from-rose-600 via-purple-600 to-sky-400 flex items-center justify-center core-pulse transition-transform duration-200">
+        <div class="w-16 h-16 rounded-full" style="background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(168,85,247,0.5) 45%, transparent 75%);"></div>
       </div>
     </section>
 
     <!-- Title & Subtitle -->
-    <div class="flex flex-col gap-2">
-      <h1 class="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
-        POWER SURGE & CIRCUIT AUDIO
+    <div class="flex flex-col gap-1.5">
+      <h1 class="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
+        HIGH-VOLTAGE POWER SURGE
       </h1>
-      <p id="subDescription" class="text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
-        High-voltage electrical ignition testbed. Experience procedural capacitor whining, circuit voltage surges, and resonant sonic booms.
+      <p id="subDescription" class="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
+        Real-time audio synthesis: hear the transformer coil charging, voltage rising, and electrical sparks crackling as the progress bar fills!
       </p>
     </div>
 
-    <!-- Power Surge Progress HUD (Visible on Boot) -->
-    <div id="bootTelemetry" class="w-full max-w-md flex flex-col gap-2.5 opacity-0 transition-opacity duration-300 pointer-events-none">
+    <!-- Power Surge Progress HUD -->
+    <div id="bootTelemetry" class="w-full max-w-md flex flex-col gap-2 transition-all duration-300">
       <div class="flex justify-between text-xs font-mono">
-        <span id="stageLabel" class="text-rose-400 font-bold">⚡ STAGE 0/4: STANDBY</span>
+        <span id="stageLabel" class="text-rose-400 font-bold">⚡ STAGE 0/4: READY</span>
         <span id="progressPct" class="text-sky-300 font-extrabold">0%</span>
       </div>
       
       <!-- Multi-Segment Circuit Power Bar -->
-      <div class="relative w-full h-3 rounded-full bg-slate-900 border border-white/[0.15] overflow-hidden p-0.5 shadow-inner">
-        <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-rose-500 via-purple-500 to-sky-400 transition-all duration-100 shadow-[0_0_15px_#38bdf8]" style="width: 0%;"></div>
+      <div class="relative w-full h-3.5 rounded-full bg-slate-900 border border-white/[0.18] overflow-hidden p-0.5 shadow-inner">
+        <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-rose-500 via-purple-500 to-sky-400 transition-all duration-75 shadow-[0_0_20px_#38bdf8]" style="width: 0%;"></div>
       </div>
       
       <div id="stageStatusText" class="text-[11px] font-mono text-slate-400 truncate">
-        Awaiting high-voltage trigger...
+        Click below or press SPACE to initiate ignition...
       </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="flex flex-col items-center gap-3 w-full max-w-md">
-      <button id="igniteBtn" class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-[0_0_40px_rgba(244,63,94,0.5),0_0_40px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer">
-        <span id="btnIcon">⚡</span>
-        <span id="btnText">TRIGGER POWER SURGE</span>
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-2.5 w-full max-w-md">
+      <button id="igniteBtn" class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-[0_0_40px_rgba(244,63,94,0.55),0_0_40px_rgba(56,189,248,0.55)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border border-white/[0.2]">
+        <span id="btnIcon" class="text-xl">⚡</span>
+        <span id="btnText" class="tracking-wide uppercase">START POWER SURGE (SPACE / ENTER)</span>
       </button>
 
-      <span class="text-xs text-slate-500 font-mono">
-        PRESS <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">SPACE</kbd> OR <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">ENTER</kbd> TO IGNITE
+      <span class="text-[11px] text-slate-500 font-mono">
+        🔊 AUDIO STARTS INSTANTLY UPON CLICK & CHARGES CONTINUOUSLY
       </span>
     </div>
 
@@ -156,214 +164,260 @@
       </div>
       <div class="p-2 rounded-xl bg-slate-900/60 border border-white/[0.06]">
         <span class="text-[10px] text-slate-500 block uppercase">CIRCUIT STATE</span>
-        <span id="stateValue" class="text-sky-400 font-bold">DISCHARGED</span>
+        <span id="stateValue" class="text-sky-400 font-bold">STANDBY</span>
       </div>
     </footer>
   </main>
 
-  <!-- ==================== PROCEDURAL AUDIO SYNTHESIZER ==================== -->
+  <!-- ==================== HIGH-DEFINITION PROCEDURAL AUDIO ENGINE ==================== -->
   <script>
-    class PowerSurgeAudioSynthesizer {
+    class CinematicPowerSurgeAudio {
       constructor() {
         this.ctx = null;
         this.isMuted = false;
+        this.activeNodes = null;
       }
 
-      init() {
+      // Pre-warm context instantly on user interaction
+      ensureContext() {
         if (!this.ctx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContext();
         }
         if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
+          return this.ctx.resume();
         }
+        return Promise.resolve();
       }
 
       toggleMute() {
         this.isMuted = !this.isMuted;
+        if (this.isMuted && this.activeNodes) {
+          this.stopContinuousSurge();
+        }
         return this.isMuted;
       }
 
-      // UI Click Chime
+      // Instant tactile click chime
       playClick() {
-        if (this.isMuted) return;
-        this.init();
-        if (!this.ctx) return;
+        if (this.isMuted || !this.ctx) return;
         try {
+          const now = this.ctx.currentTime;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = "sine";
-          osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.03);
-          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.03);
+          osc.frequency.setValueAtTime(1400, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start();
-          osc.stop(this.ctx.currentTime + 0.03);
+          osc.start(now);
+          osc.stop(now + 0.04);
         } catch {}
       }
 
-      // Multi-stage Power Surge Audio Suite
-      playStageAudio(stage) {
-        if (this.isMuted) return;
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
+      // =========================================================================
+      // 1. CONTINUOUS DYNAMIC CHARGING SURGE (Plays through entire 0% -> 100%)
+      // =========================================================================
+      startContinuousSurge(durationSec = 3.5) {
+        if (this.isMuted || !this.ctx) return;
+        this.stopContinuousSurge();
 
         try {
-          if (stage === 1) {
-            // STAGE 1: Mechanical relay click + Rising capacitor coil whine (100Hz -> 650Hz) + Sub Bass Hum
-            
-            // 1. Relay Click
-            const clickOsc = this.ctx.createOscillator();
-            const clickGain = this.ctx.createGain();
-            clickOsc.type = "triangle";
-            clickOsc.frequency.setValueAtTime(2200, now);
-            clickOsc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
-            clickGain.gain.setValueAtTime(0.2, now);
-            clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-            clickOsc.connect(clickGain);
-            clickGain.connect(this.ctx.destination);
-            clickOsc.start(now);
-            clickOsc.stop(now + 0.04);
+          const now = this.ctx.currentTime;
+          const endTime = now + durationSec;
 
-            // 2. Rising Capacitor Coil Charge
-            const coilOsc = this.ctx.createOscillator();
-            const coilGain = this.ctx.createGain();
-            const coilFilter = this.ctx.createBiquadFilter();
+          // --- Node 1: Heavy Sub-Bass Voltage Hum (50Hz -> 85Hz) ---
+          const subOsc = this.ctx.createOscillator();
+          const subGain = this.ctx.createGain();
+          subOsc.type = "sine";
+          subOsc.frequency.setValueAtTime(50, now);
+          subOsc.frequency.linearRampToValueAtTime(85, endTime);
+          subGain.gain.setValueAtTime(0.2, now);
+          subGain.gain.linearRampToValueAtTime(0.35, endTime);
+          subOsc.connect(subGain);
+          subGain.connect(this.ctx.destination);
+          subOsc.start(now);
+          subOsc.stop(endTime);
 
-            coilOsc.type = "sawtooth";
-            coilOsc.frequency.setValueAtTime(110, now);
-            coilOsc.frequency.exponentialRampToValueAtTime(660, now + 0.6);
+          // --- Node 2: Dual-Detuned Transformer Coil Whine (70Hz -> 1100Hz) ---
+          const coil1 = this.ctx.createOscillator();
+          const coil2 = this.ctx.createOscillator();
+          const coilGain = this.ctx.createGain();
+          const coilFilter = this.ctx.createBiquadFilter();
 
-            coilFilter.type = "lowpass";
-            coilFilter.frequency.setValueAtTime(300, now);
-            coilFilter.frequency.exponentialRampToValueAtTime(2800, now + 0.6);
+          coil1.type = "sawtooth";
+          coil2.type = "sawtooth";
 
-            coilGain.gain.setValueAtTime(0.01, now);
-            coilGain.gain.linearRampToValueAtTime(0.12, now + 0.1);
-            coilGain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+          // Exponential frequency glide (rising pitch matches charging bar!)
+          coil1.frequency.setValueAtTime(70, now);
+          coil1.frequency.exponentialRampToValueAtTime(980, endTime);
 
-            coilOsc.connect(coilFilter);
-            coilFilter.connect(coilGain);
-            coilGain.connect(this.ctx.destination);
+          coil2.frequency.setValueAtTime(73, now); // Detuned for analog thickness
+          coil2.frequency.exponentialRampToValueAtTime(995, endTime);
 
-            coilOsc.start(now);
-            coilOsc.stop(now + 0.65);
+          // Resonant Lowpass opening up from dark hum to screaming laser
+          coilFilter.type = "lowpass";
+          coilFilter.frequency.setValueAtTime(180, now);
+          coilFilter.frequency.exponentialRampToValueAtTime(4500, endTime);
+          coilFilter.Q.setValueAtTime(5.5, now);
 
-            // 3. Sub-Bass Voltage Rumble
-            const subOsc = this.ctx.createOscillator();
-            const subGain = this.ctx.createGain();
-            subOsc.type = "sine";
-            subOsc.frequency.setValueAtTime(55, now);
-            subOsc.frequency.linearRampToValueAtTime(75, now + 0.5);
-            subGain.gain.setValueAtTime(0.18, now);
-            subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-            subOsc.connect(subGain);
-            subGain.connect(this.ctx.destination);
-            subOsc.start(now);
-            subOsc.stop(now + 0.55);
+          coilGain.gain.setValueAtTime(0.02, now);
+          coilGain.gain.linearRampToValueAtTime(0.18, endTime);
 
-          } else if (stage === 2) {
-            // STAGE 2: Voltage Surge Spark Crackle + Modulated PWM Drone (440Hz -> 880Hz)
-            const osc = this.ctx.createOscillator();
-            const lfo = this.ctx.createOscillator();
-            const lfoGain = this.ctx.createGain();
-            const mainGain = this.ctx.createGain();
-            const filter = this.ctx.createBiquadFilter();
+          coil1.connect(coilFilter);
+          coil2.connect(coilFilter);
+          coilFilter.connect(coilGain);
+          coilGain.connect(this.ctx.destination);
 
-            osc.type = "sawtooth";
-            osc.frequency.setValueAtTime(330, now);
-            osc.frequency.exponentialRampToValueAtTime(880, now + 0.5);
+          coil1.start(now);
+          coil2.start(now);
+          coil1.stop(endTime);
+          coil2.stop(endTime);
 
-            // Rapid LFO Amplitude Modulation for electrical flutter
-            lfo.type = "square";
-            lfo.frequency.setValueAtTime(28, now);
-            lfoGain.gain.setValueAtTime(150, now);
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
-
-            filter.type = "bandpass";
-            filter.frequency.setValueAtTime(800, now);
-            filter.Q.setValueAtTime(4.0, now);
-            filter.frequency.exponentialRampToValueAtTime(3500, now + 0.5);
-
-            mainGain.gain.setValueAtTime(0.12, now);
-            mainGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-
-            osc.connect(filter);
-            filter.connect(mainGain);
-            mainGain.connect(this.ctx.destination);
-
-            lfo.start(now);
-            osc.start(now);
-            lfo.stop(now + 0.55);
-            osc.stop(now + 0.55);
-
-          } else if (stage === 3) {
-            // STAGE 3: High-Voltage Tensor Alignment (Dual Harmonic Chords + Resonance Sweep)
-            [440, 554.37, 659.25, 880].forEach((freq, idx) => {
-              const chordOsc = this.ctx.createOscillator();
-              const chordGain = this.ctx.createGain();
-              chordOsc.type = "triangle";
-              chordOsc.frequency.setValueAtTime(freq * 0.8, now + idx * 0.04);
-              chordOsc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.45);
-
-              chordGain.gain.setValueAtTime(0.05, now + idx * 0.04);
-              chordGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-              chordOsc.connect(chordGain);
-              chordGain.connect(this.ctx.destination);
-              chordOsc.start(now + idx * 0.04);
-              chordOsc.stop(now + 0.5);
-            });
-
-          } else if (stage === 4) {
-            // STAGE 4: SUPERNOVA IGNITION — Sonic Boom Shockwave + Resonant Sub Drop + Tonal Shimmer
-            
-            // 1. Sub-Bass Super Impact
-            const boomOsc = this.ctx.createOscillator();
-            const boomGain = this.ctx.createGain();
-            boomOsc.type = "sine";
-            boomOsc.frequency.setValueAtTime(140, now);
-            boomOsc.frequency.exponentialRampToValueAtTime(32, now + 0.9);
-
-            boomGain.gain.setValueAtTime(0.35, now);
-            boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
-
-            boomOsc.connect(boomGain);
-            boomGain.connect(this.ctx.destination);
-            boomOsc.start(now);
-            boomOsc.stop(now + 1.1);
-
-            // 2. High-Frequency Laser Shimmer Burst
-            const shimmerOsc = this.ctx.createOscillator();
-            const shimmerGain = this.ctx.createGain();
-            const shimmerFilter = this.ctx.createBiquadFilter();
-
-            shimmerOsc.type = "sawtooth";
-            shimmerOsc.frequency.setValueAtTime(1760, now);
-            shimmerOsc.frequency.exponentialRampToValueAtTime(3520, now + 0.3);
-
-            shimmerFilter.type = "highpass";
-            shimmerFilter.frequency.setValueAtTime(1500, now);
-
-            shimmerGain.gain.setValueAtTime(0.15, now);
-            shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
-
-            shimmerOsc.connect(shimmerFilter);
-            shimmerFilter.connect(shimmerGain);
-            shimmerGain.connect(this.ctx.destination);
-
-            shimmerOsc.start(now);
-            shimmerOsc.stop(now + 0.75);
+          // --- Node 3: Procedural Pink/White Noise Spark Crackle Generator ---
+          const bufferSize = this.ctx.sampleRate * 2;
+          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99 * b0 + white * 0.05;
+            b1 = 0.95 * b1 + white * 0.11;
+            b2 = 0.85 * b2 + white * 0.25;
+            output[i] = (b0 + b1 + b2) * 0.4;
           }
+
+          const noiseSource = this.ctx.createBufferSource();
+          noiseSource.buffer = noiseBuffer;
+          noiseSource.loop = true;
+
+          const noiseFilter = this.ctx.createBiquadFilter();
+          noiseFilter.type = "bandpass";
+          noiseFilter.frequency.setValueAtTime(1200, now);
+          noiseFilter.frequency.exponentialRampToValueAtTime(3800, endTime);
+          noiseFilter.Q.setValueAtTime(6.0, now);
+
+          // Rapid Amplitude Tremolo for electrical sparks
+          const tremolo = this.ctx.createOscillator();
+          const tremoloGain = this.ctx.createGain();
+          tremolo.type = "square";
+          tremolo.frequency.setValueAtTime(16, now);
+          tremolo.frequency.linearRampToValueAtTime(48, endTime); // Crackle accelerates!
+
+          const noiseGain = this.ctx.createGain();
+          noiseGain.gain.setValueAtTime(0.01, now);
+          noiseGain.gain.linearRampToValueAtTime(0.09, endTime);
+
+          tremolo.connect(noiseGain.gain);
+          noiseSource.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(this.ctx.destination);
+
+          tremolo.start(now);
+          noiseSource.start(now);
+          tremolo.stop(endTime);
+          noiseSource.stop(endTime);
+
+          this.activeNodes = { subOsc, coil1, coil2, noiseSource, tremolo };
+        } catch {}
+      }
+
+      stopContinuousSurge() {
+        if (this.activeNodes) {
+          try {
+            Object.values(this.activeNodes).forEach(node => {
+              try { node.stop(); } catch {}
+              try { node.disconnect(); } catch {}
+            });
+          } catch {}
+          this.activeNodes = null;
+        }
+      }
+
+      // =========================================================================
+      // 2. MILESTONE IMPACT CHIMES (Fires cleanly at 25%, 50%, 75%)
+      // =========================================================================
+      playMilestone(stage) {
+        if (this.isMuted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const chords = {
+            1: [330, 440],       // Stage 1 (25%): Low Energy Lock
+            2: [440, 660, 880],  // Stage 2 (50%): Harmonic Surge
+            3: [660, 880, 1320], // Stage 3 (75%): High Resonant Charge
+          };
+
+          const freqs = chords[stage] || [440, 880];
+          freqs.forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(f, now + idx * 0.02);
+            osc.frequency.exponentialRampToValueAtTime(f * 1.05, now + 0.35);
+
+            gain.gain.setValueAtTime(0.08, now + idx * 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.02);
+            osc.stop(now + 0.4);
+          });
+        } catch {}
+      }
+
+      // =========================================================================
+      // 3. SUPERNOVA SONIC BOOM FINALE (100% Milestone Completion)
+      // =========================================================================
+      playSupernovaCompletion() {
+        if (this.isMuted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+
+          // 1. Deep 808 Sub-Bass Drop (180Hz -> 28Hz)
+          const boomOsc = this.ctx.createOscillator();
+          const boomGain = this.ctx.createGain();
+          boomOsc.type = "sine";
+          boomOsc.frequency.setValueAtTime(180, now);
+          boomOsc.frequency.exponentialRampToValueAtTime(28, now + 1.2);
+
+          boomGain.gain.setValueAtTime(0.4, now);
+          boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.3);
+
+          boomOsc.connect(boomGain);
+          boomGain.connect(this.ctx.destination);
+          boomOsc.start(now);
+          boomOsc.stop(now + 1.3);
+
+          // 2. High-Frequency Laser Shimmer Burst (2200Hz -> 4400Hz)
+          const shimmerOsc = this.ctx.createOscillator();
+          const shimmerGain = this.ctx.createGain();
+          const shimmerFilter = this.ctx.createBiquadFilter();
+
+          shimmerOsc.type = "sawtooth";
+          shimmerOsc.frequency.setValueAtTime(1760, now);
+          shimmerOsc.frequency.exponentialRampToValueAtTime(4400, now + 0.5);
+
+          shimmerFilter.type = "bandpass";
+          shimmerFilter.frequency.setValueAtTime(2400, now);
+          shimmerFilter.Q.setValueAtTime(4.0, now);
+
+          shimmerGain.gain.setValueAtTime(0.18, now);
+          shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+          shimmerOsc.connect(shimmerFilter);
+          shimmerFilter.connect(shimmerGain);
+          shimmerGain.connect(this.ctx.destination);
+
+          shimmerOsc.start(now);
+          shimmerOsc.stop(now + 0.9);
         } catch {}
       }
     }
 
-    const soundSynth = new PowerSurgeAudioSynthesizer();
+    const soundSynth = new CinematicPowerSurgeAudio();
   </script>
 
   <!-- ==================== DUAL-CANVAS POWER SURGE VISUAL ENGINE ==================== -->
@@ -376,7 +430,6 @@
     const soundIcon = document.getElementById("soundIcon");
     const soundLabel = document.getElementById("soundLabel");
 
-    const bootTelemetry = document.getElementById("bootTelemetry");
     const stageLabel = document.getElementById("stageLabel");
     const progressPct = document.getElementById("progressPct");
     const progressBar = document.getElementById("progressBar");
@@ -395,7 +448,7 @@
     let surgeProgress = 0;
     let surgeInterval = null;
 
-    // --- CANVAS RESIZE LOGIC ---
+    // --- RESIZE CANVAS ---
     function resizeCanvases() {
       const dpr = window.devicePixelRatio || 1;
       [rainCanvas, circuitCanvas].forEach(c => {
@@ -431,7 +484,7 @@
         const isRed = i % 2 === 0;
         rainCtx.fillStyle = isRed ? "#f43f5e" : "#38bdf8";
         rainCtx.shadowColor = isRed ? "#f43f5e" : "#38bdf8";
-        rainCtx.shadowBlur = isSurging ? 14 : 4;
+        rainCtx.shadowBlur = isSurging ? 12 : 4;
 
         rainCtx.fillText(char, x, y);
 
@@ -447,15 +500,14 @@
     // --- LAYER 1: PCB CIRCUIT POWER SURGE ENGINE ---
     const circuitCtx = circuitCanvas.getContext("2d");
 
-    // Generate 18 Right-Angle Radial PCB Circuit Traces
-    const NUM_TRACES = 18;
+    // 20 Radiating High-Voltage PCB Circuit Traces
+    const NUM_TRACES = 20;
     const pcbTraces = Array.from({ length: NUM_TRACES }, (_, i) => {
       const baseAngle = (i / NUM_TRACES) * Math.PI * 2;
-      const angleOffset = (Math.random() - 0.5) * 0.2;
       const r1 = 120 + Math.random() * 50;
       const r2 = r1 + 80 + Math.random() * 100;
       const r3 = r2 + 100 + Math.random() * 150;
-      const turnAngle = baseAngle + (Math.random() > 0.5 ? Math.PI / 4 : -Math.PI / 4);
+      const turnAngle = baseAngle + (i % 2 === 0 ? Math.PI / 4 : -Math.PI / 4);
 
       return {
         color: i % 2 === 0 ? "#f43f5e" : "#38bdf8",
@@ -463,20 +515,19 @@
         r1, r2, r3,
         turnAngle,
         pulseOffset: Math.random() * 100,
-        pulseSpeed: 1.5 + Math.random() * 2.0,
+        pulseSpeed: 1.8 + Math.random() * 2.2,
       };
     });
 
-    // Dynamic Concentric Shockwaves
     const shockwaves = [];
 
     function triggerShockwave(color = "#38bdf8") {
       shockwaves.push({
         radius: 80,
-        maxRadius: Math.max(window.innerWidth, window.innerHeight) * 0.8,
+        maxRadius: Math.max(window.innerWidth, window.innerHeight) * 0.85,
         alpha: 1.0,
         color: color,
-        speed: isSurging ? 18 : 6,
+        speed: isSurging ? 16 : 6,
       });
     }
 
@@ -511,12 +562,12 @@
         circuitCtx.lineTo(x1, y1);
         circuitCtx.lineTo(x2, y2);
         circuitCtx.lineTo(x3, y3);
-        circuitCtx.strokeStyle = "rgba(255, 255, 255, 0.08)";
-        circuitCtx.lineWidth = 2;
+        circuitCtx.strokeStyle = isSurging ? "rgba(255, 255, 255, 0.16)" : "rgba(255, 255, 255, 0.07)";
+        circuitCtx.lineWidth = isSurging ? 2.5 : 1.5;
         circuitCtx.stroke();
 
-        // High-Voltage Electric Pulse Packet along trace
-        const surgeMultiplier = isSurging ? 4.0 : 1.0;
+        // High-Voltage Electric Pulse along trace
+        const surgeMultiplier = isSurging ? 4.5 : 1.0;
         const progress = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset) % 100) / 100;
         
         let px, py;
@@ -536,32 +587,32 @@
 
         // Glowing Electric Electron Cluster
         circuitCtx.beginPath();
-        circuitCtx.arc(px, py, isSurging ? 5 : 3, 0, Math.PI * 2);
+        circuitCtx.arc(px, py, isSurging ? 5.5 : 3, 0, Math.PI * 2);
         circuitCtx.fillStyle = trace.color;
         circuitCtx.shadowColor = trace.color;
-        circuitCtx.shadowBlur = isSurging ? 22 : 10;
+        circuitCtx.shadowBlur = isSurging ? 24 : 8;
         circuitCtx.fill();
 
-        // Micro-Via Solder Pad at terminal
+        // Solder Terminal Node
         circuitCtx.beginPath();
-        circuitCtx.arc(x3, y3, 4, 0, Math.PI * 2);
-        circuitCtx.fillStyle = "rgba(255, 255, 255, 0.35)";
+        circuitCtx.arc(x3, y3, isSurging ? 4.5 : 3.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = isSurging ? trace.color : "rgba(255, 255, 255, 0.3)";
         circuitCtx.strokeStyle = trace.color;
         circuitCtx.lineWidth = 1.5;
         circuitCtx.fill();
         circuitCtx.stroke();
       });
 
-      // 2. Render Crackling Electric Lightning Arcs (Active during surge)
+      // 2. Crackling Lightning Arcs (Active during surge)
       if (isSurging) {
         circuitCtx.strokeStyle = Math.random() > 0.5 ? "#f43f5e" : "#38bdf8";
-        circuitCtx.lineWidth = 2 + Math.random() * 2;
+        circuitCtx.lineWidth = 2 + Math.random() * 2.5;
         circuitCtx.shadowColor = "#ffffff";
-        circuitCtx.shadowBlur = 18;
+        circuitCtx.shadowBlur = 20;
 
         for (let a = 0; a < 3; a++) {
           const startAngle = Math.random() * Math.PI * 2;
-          let currentR = 100;
+          let currentR = 90;
           let currentX = cx + Math.cos(startAngle) * currentR;
           let currentY = cy + Math.sin(startAngle) * currentR;
 
@@ -569,8 +620,8 @@
           circuitCtx.moveTo(currentX, currentY);
 
           for (let seg = 0; seg < 4; seg++) {
-            currentR += 40 + Math.random() * 30;
-            const segAngle = startAngle + (Math.random() - 0.5) * 0.6;
+            currentR += 45 + Math.random() * 35;
+            const segAngle = startAngle + (Math.random() - 0.5) * 0.7;
             currentX = cx + Math.cos(segAngle) * currentR;
             currentY = cy + Math.sin(segAngle) * currentR;
             circuitCtx.lineTo(currentX, currentY);
@@ -593,10 +644,10 @@
         circuitCtx.beginPath();
         circuitCtx.arc(cx, cy, sw.radius, 0, Math.PI * 2);
         circuitCtx.strokeStyle = sw.color;
-        circuitCtx.lineWidth = 3 * sw.alpha;
+        circuitCtx.lineWidth = 3.5 * sw.alpha;
         circuitCtx.globalAlpha = sw.alpha;
         circuitCtx.shadowColor = sw.color;
-        circuitCtx.shadowBlur = 25 * sw.alpha;
+        circuitCtx.shadowBlur = 30 * sw.alpha;
         circuitCtx.stroke();
         circuitCtx.globalAlpha = 1.0;
       }
@@ -612,22 +663,30 @@
     }
     requestAnimationFrame(render);
 
-    // ==================== SURGE IGNITION STAGES ====================
+    // ==================== SURGE IGNITION ENGINE ====================
     const STAGES = [
-      { pct: 25, stage: 1, text: "⚡ STAGE 1/4: RELAY LOCK & CAPACITOR CHARGE", status: "Charging magnetic coil stator... (120V ➔ 480V)", voltage: "480.0 V", freq: "120 Hz", state: "CHARGING", color: "#f43f5e" },
-      { pct: 50, stage: 2, text: "🧠 STAGE 2/4: VOLTAGE SURGE & TENSOR BUS", status: "High-voltage spark surge engaged on 18 PCB tracks...", voltage: "1.21 kV", freq: "240 Hz", state: "SURGING", color: "#a855f7" },
+      { pct: 25, stage: 1, text: "⚡ STAGE 1/4: RELAY LOCK & COIL CHARGE", status: "Magnetic coil stator charging (120V ➔ 480V)...", voltage: "480.0 V", freq: "120 Hz", state: "CHARGING", color: "#f43f5e" },
+      { pct: 50, stage: 2, text: "🧠 STAGE 2/4: VOLTAGE SURGE & TENSOR BUS", status: "High-voltage spark surge engaged on 20 PCB tracks...", voltage: "1.21 kV", freq: "240 Hz", state: "SURGING", color: "#a855f7" },
       { pct: 75, stage: 3, text: "🧭 STAGE 3/4: HARMONIC RESONANCE ALIGNMENT", status: "Circumplex affective vector plane synchronized...", voltage: "3.84 kV", freq: "440 Hz", state: "HARMONIC", color: "#38bdf8" },
       { pct: 100, stage: 4, text: "🔮 STAGE 4/4: SUPERNOVA RESONANCE IGNITION", status: "Supercharged! Neural Mirror Core 100% Operational.", voltage: "10.0 kV", freq: "880 Hz", state: "OVERCHARGED", color: "#10b981" },
     ];
 
-    function startPowerSurge() {
+    async function startPowerSurge() {
       if (isSurging) return;
-      isSurging = true;
-
-      // Audio & UI Initiation
+      
+      // 1. Immediately wake up and unlock Web Audio context on the user click
+      await soundSynth.ensureContext();
       soundSynth.playClick();
-      bootTelemetry.classList.remove("opacity-0");
-      bootTelemetry.classList.add("opacity-100");
+
+      isSurging = true;
+      surgeProgress = 0;
+      let lastTriggeredStage = 0;
+
+      // 2. Start the Continuous Charging Drone (Whining pitch + Sub-Bass + Electric Spark Crackle)
+      const TOTAL_DURATION_SEC = 3.5;
+      soundSynth.startContinuousSurge(TOTAL_DURATION_SEC);
+
+      // UI Changes
       igniteBtn.disabled = true;
       igniteBtn.classList.add("opacity-70", "cursor-not-allowed");
       document.getElementById("btnText").innerText = "POWER SURGE ACTIVE...";
@@ -636,28 +695,34 @@
       outerStator.classList.remove("spin-slow");
       outerStator.classList.add("spin-fast");
       plasmaCore.classList.add("scale-110");
-      mainCard.classList.add("shaking");
+      mainCard.classList.add("shake-subtle");
 
-      surgeProgress = 0;
-      let lastTriggeredStage = 0;
-
-      // Rapid Shockwave Burst
+      // Initial shockwave
       triggerShockwave("#f43f5e");
 
+      // 3. Smooth 3.5-second charging progress loop (35ms interval x 100 steps)
       surgeInterval = setInterval(() => {
-        surgeProgress += 2;
+        surgeProgress += 1;
         if (surgeProgress > 100) surgeProgress = 100;
 
         progressBar.style.width = `${surgeProgress}%`;
         progressPct.innerText = `${surgeProgress}%`;
 
-        // Check Stage Triggers
+        // Switch to intense shake as energy builds (past 60%)
+        if (surgeProgress >= 60 && !mainCard.classList.contains("shake-intense")) {
+          mainCard.classList.remove("shake-subtle");
+          mainCard.classList.add("shake-intense");
+        }
+
+        // Check Stage Milestones (25%, 50%, 75%)
         const stageObj = STAGES.find(s => s.pct === surgeProgress);
         if (stageObj && stageObj.stage > lastTriggeredStage) {
           lastTriggeredStage = stageObj.stage;
 
-          // Sound Trigger
-          soundSynth.playStageAudio(stageObj.stage);
+          // Milestone Audio Ping
+          if (stageObj.stage < 4) {
+            soundSynth.playMilestone(stageObj.stage);
+          }
 
           // Visual Telemetry Updates
           stageLabel.innerText = stageObj.text;
@@ -666,32 +731,37 @@
           voltageMeter.innerText = `${stageObj.voltage} // ${stageObj.state}`;
           voltageMeter.style.color = stageObj.color;
 
-          voltageMeter.className = "font-bold animate-pulse";
-          voltageMeter.style.color = stageObj.color;
-
           capValue.innerText = `${(12000 * (stageObj.stage / 4)).toLocaleString()} µF`;
           freqValue.innerText = stageObj.freq;
           stateValue.innerText = stageObj.state;
           stateValue.style.color = stageObj.color;
 
-          // Radial Shockwave Trigger on each milestone
+          // Radial Shockwave Trigger
           triggerShockwave(stageObj.color);
         }
 
         // Completion at 100%
         if (surgeProgress >= 100) {
           clearInterval(surgeInterval);
-          mainCard.classList.remove("shaking");
+          mainCard.classList.remove("shake-subtle", "shake-intense");
           
+          // Stop continuous charge and fire Supernova Bass Drop + Shimmer Finale!
+          soundSynth.stopContinuousSurge();
+          soundSynth.playSupernovaCompletion();
+          triggerShockwave("#10b981");
+
           setTimeout(() => {
             document.getElementById("btnText").innerText = "⚡ RE-IGNITE POWER SURGE";
             igniteBtn.disabled = false;
             igniteBtn.classList.remove("opacity-70", "cursor-not-allowed");
             statusLed.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+            outerStator.classList.remove("spin-fast");
+            outerStator.classList.add("spin-slow");
+            plasmaCore.classList.remove("scale-110");
             isSurging = false;
-          }, 1200);
+          }, 1500);
         }
-      }, 50);
+      }, 35);
     }
 
     // --- EVENT LISTENERS ---
@@ -704,16 +774,17 @@
       }
     });
 
-    soundToggleBtn.addEventListener("click", () => {
+    soundToggleBtn.addEventListener("click", async () => {
+      await soundSynth.ensureContext();
       const muted = soundSynth.toggleMute();
       if (muted) {
         soundIcon.innerText = "🔇";
         soundLabel.innerText = "AUDIO: OFF";
-        soundToggleBtn.classList.replace("text-slate-300", "text-rose-400");
+        soundToggleBtn.classList.replace("text-slate-200", "text-rose-400");
       } else {
         soundIcon.innerText = "🔊";
         soundLabel.innerText = "AUDIO: ON";
-        soundToggleBtn.classList.replace("text-rose-400", "text-slate-300");
+        soundToggleBtn.classList.replace("text-rose-400", "text-slate-200");
         soundSynth.playClick();
       }
     });
