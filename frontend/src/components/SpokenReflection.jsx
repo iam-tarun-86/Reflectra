@@ -3,7 +3,7 @@ import { MessageSquare, Volume2, Sparkles } from "lucide-react";
 import { LivingEmotionOrb } from "./LivingEmotionOrb";
 
 export function SpokenReflection({
-  text = "Welcome to EmotionLens. Express yourself and notice how your emotional patterns reflect in real time.",
+  text = "Welcome to REFLECTRA. Express yourself and notice how your emotional patterns reflect in real time.",
   latency = null,
   model = "Local LLM",
   isSpeaking = false,
