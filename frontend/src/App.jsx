@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { RetroGrid } from "./components/RetroGrid";
 import { OrbitalRings } from "./components/OrbitalRings";
 import { Header } from "./components/Header";
+import { WelcomeHero } from "./components/WelcomeHero";
 import { BiometricMirror } from "./components/BiometricMirror";
 import { EmotionRadar } from "./components/EmotionRadar";
 import { EmotionSpectrum } from "./components/EmotionSpectrum";
@@ -17,19 +18,21 @@ import { useSpeech } from "./hooks/useSpeech";
 
 const MOOD_COLORS = {
   happy: "#10b981",
-  sad: "#3b82f6",
-  angry: "#ef4444",
-  surprise: "#f59e0b",
-  fear: "#a855f7",
-  disgust: "#84cc16",
-  neutral: "#64748b",
+  sad: "#38bdf8",
+  angry: "#f43f5e",
+  surprise: "#fbbf24",
+  fear: "#c084fc",
+  disgust: "#a3e635",
+  neutral: "#94a3b8",
 };
 
 export default function App() {
+  const [isStarted, setIsStarted] = useState(false);
+
   const { isConnected, fps, metadata, lastEchoBlob, sendFrame, sendDebugEmotion } = useWebSocket();
   const { isVoiceEnabled, isSpeaking, speak, toggleVoice } = useSpeech();
 
-  const [sessionStartTime] = useState(Date.now());
+  const [sessionStartTime, setSessionStartTime] = useState(Date.now());
   const [timelineData, setTimelineData] = useState([]);
   const [shiftHistory, setShiftHistory] = useState([]);
   const [logs, setLogs] = useState([
@@ -46,6 +49,12 @@ export default function App() {
   const lastLoggedRawRef = useRef(0);
   const lastReflectionRef = useRef(currentReflection);
 
+  const handleStart = useCallback(() => {
+    setIsStarted(true);
+    setSessionStartTime(Date.now());
+    speak("Neural Mirror initialized. Welcome to EmotionLens.");
+  }, [speak]);
+
   const addLog = useCallback((agent, message) => {
     const timeSec = ((Date.now() - sessionStartTime) / 1000).toFixed(1);
     setLogs((prev) => [...prev.slice(-50), { time: timeSec, agent, message }]);
@@ -53,7 +62,7 @@ export default function App() {
 
   // Handle incoming metadata updates
   useEffect(() => {
-    if (!metadata) return;
+    if (!metadata || !isStarted) return;
 
     // 1. Mood State & Timeline Point
     if (metadata.mood) {
@@ -117,7 +126,7 @@ export default function App() {
         }
       }
     }
-  }, [metadata, sessionStartTime, addLog, speak]);
+  }, [metadata, isStarted, sessionStartTime, addLog, speak]);
 
   // Keyboard Hotkeys
   useEffect(() => {
@@ -137,14 +146,17 @@ export default function App() {
   }, [toggleVoice, sendDebugEmotion]);
 
   const dominantMood = metadata?.mood?.current || "neutral";
-  const moodColor = MOOD_COLORS[dominantMood] || "#64748b";
+  const moodColor = MOOD_COLORS[dominantMood] || "#94a3b8";
   const moodGlow = `${moodColor}33`;
 
   return (
-    <div className="relative min-h-screen flex flex-col bg-[#05070E] text-slate-100 selection:bg-purple-500 selection:text-white">
+    <div className="relative min-h-screen flex flex-col bg-[#0b0f19] text-slate-100 selection:bg-purple-500 selection:text-white">
       {/* Background Visual Effects */}
       <RetroGrid moodGlowColor={moodGlow} />
       <OrbitalRings moodColor={moodColor} />
+
+      {/* Tap to Begin Screen */}
+      {!isStarted && <WelcomeHero onStart={handleStart} />}
 
       {/* Header */}
       <Header
@@ -153,6 +165,7 @@ export default function App() {
         isVoiceEnabled={isVoiceEnabled}
         onToggleVoice={toggleVoice}
         onOpenSummary={() => setIsSummaryOpen(true)}
+        onStandby={() => setIsStarted(false)}
       />
 
       {/* Main Content Layout */}
@@ -164,7 +177,7 @@ export default function App() {
           {/* Left Column: Video Mirror & Biometric Radar (7 cols) */}
           <div className="lg:col-span-7 flex flex-col gap-4">
             <BiometricMirror
-              onFrameCapture={sendFrame}
+              onFrameCapture={isStarted ? sendFrame : null}
               lastEchoBlob={lastEchoBlob}
               isFaceDetected={metadata?.face_detected !== undefined ? metadata.face_detected : true}
               faceBox={metadata?.face_box || null}

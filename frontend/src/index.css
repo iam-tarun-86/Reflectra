@@ -4,19 +4,19 @@
 
 :root {
   --color-happy: #10b981;
-  --color-sad: #3b82f6;
-  --color-angry: #ef4444;
-  --color-surprise: #f59e0b;
-  --color-fear: #a855f7;
-  --color-disgust: #84cc16;
-  --color-neutral: #64748b;
-  --current-mood-color: #64748b;
-  --current-mood-glow: rgba(100, 116, 139, 0.18);
+  --color-sad: #38bdf8;
+  --color-angry: #f43f5e;
+  --color-surprise: #fbbf24;
+  --color-fear: #c084fc;
+  --color-disgust: #a3e635;
+  --color-neutral: #94a3b8;
+  --current-mood-color: #94a3b8;
+  --current-mood-glow: rgba(148, 163, 184, 0.22);
 }
 
 body {
-  background-color: #05070e;
-  color: #f1f5f9;
+  background: radial-gradient(circle at 50% 0%, #171d34 0%, #0d1222 55%, #080b15 100%);
+  color: #f8fafc;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
@@ -28,34 +28,35 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(10, 12, 20, 0.6);
+  background: rgba(15, 23, 42, 0.6);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.22);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.35);
 }
 
 /* Glassmorphic Utilities */
 .glass-panel {
-  background: rgba(15, 18, 28, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(17, 24, 39, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
 }
 
 .glass-panel-hover {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-panel-hover:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.6);
 }
 
 /* Laser Scanline */
 .laser-beam {
-  background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.8) 50%, transparent 100%);
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+  background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.9) 50%, transparent 100%);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
 }
