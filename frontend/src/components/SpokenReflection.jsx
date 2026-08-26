@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Volume2, Sparkles } from "lucide-react";
 import { LivingEmotionOrb } from "./LivingEmotionOrb";
 

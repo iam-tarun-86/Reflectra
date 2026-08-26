@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 const MOOD_GRADIENTS = {
   happy: { core: "#10b981", outer: "#f59e0b", glow: "rgba(16, 185, 129, 0.45)" },

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Terminal, Trash2 } from "lucide-react";
 
 export function TelemetryConsole({ logs = [], onClear }) {

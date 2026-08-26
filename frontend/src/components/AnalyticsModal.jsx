@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, Download, BarChart2, Sparkles } from "lucide-react";
 
 export function AnalyticsModal({
@@ -14,6 +14,8 @@ export function AnalyticsModal({
 }) {
   const [closingObservation, setClosingObservation] = useState("Analyzing session patterns with local LLM...");
   const hasFetchedRef = useRef(false);
+  const latestPropsRef = useRef({ dominantMood, lastReflection, onSpeak, shiftHistory, timelineData });
+  latestPropsRef.current = { dominantMood, lastReflection, onSpeak, shiftHistory, timelineData };
 
   useEffect(() => {
     if (!isOpen) {
@@ -28,14 +30,22 @@ export function AnalyticsModal({
     setClosingObservation("Synthesizing session reflection with local LLM...");
 
     async function fetchSummary() {
+      const {
+        dominantMood: currentDominant,
+        lastReflection: currentReflection,
+        onSpeak: currentOnSpeak,
+        shiftHistory: currentShifts,
+        timelineData: currentTimeline,
+      } = latestPropsRef.current;
+
       try {
         const counts = {};
-        timelineData.forEach((p) => {
+        currentTimeline.forEach((p) => {
           counts[p.emotion] = (counts[p.emotion] || 0) + 1;
         });
         const dominantEntry = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
         const domStr = dominantEntry
-          ? `${dominantEntry[0]} (${Math.round((dominantEntry[1] / (timelineData.length || 1)) * 100)}%)`
+          ? `${dominantEntry[0]} (${Math.round((dominantEntry[1] / (currentTimeline.length || 1)) * 100)}%)`
           : "Neutral (100%)";
 
         const res = await fetch("/session/summary", {
@@ -43,9 +53,9 @@ export function AnalyticsModal({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             dominant: domStr,
-            shifts: shiftHistory.slice(-6),
-            points: timelineData.length,
-            last_mood: dominantMood,
+            shifts: currentShifts.slice(-6),
+            points: currentTimeline.length,
+            last_mood: currentDominant,
           }),
         });
 
@@ -54,18 +64,18 @@ export function AnalyticsModal({
           if (isMounted) {
             const text = data.text || "A session of mindful expressions and steady presence.";
             setClosingObservation(text);
-            if (onSpeak) onSpeak(text);
+            if (currentOnSpeak) currentOnSpeak(text);
           }
         } else {
           if (isMounted) {
             setClosingObservation("A serene and observant session — thank you for exploring REFLECTRA.");
           }
         }
-      } catch (err) {
+      } catch {
         if (isMounted) {
           setClosingObservation(
-            lastReflection && !lastReflection.includes("Welcome")
-              ? lastReflection
+            currentReflection && !currentReflection.includes("Welcome")
+              ? currentReflection
               : "A serene and observant session — thank you for exploring REFLECTRA."
           );
         }

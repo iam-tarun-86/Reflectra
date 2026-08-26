@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Compass } from "lucide-react";
 
 export function EmotionRadar({ valence = 0, arousal = 0.5, moodColor = "#c084fc" }) {

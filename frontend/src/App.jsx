@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { RetroGrid } from "./components/RetroGrid";
 import { OrbitalRings } from "./components/OrbitalRings";
 import { Header } from "./components/Header";

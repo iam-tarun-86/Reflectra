@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 
 const MOOD_COLORS = {

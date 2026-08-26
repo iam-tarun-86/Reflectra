@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Brain, Eye, Compass, Volume2, Zap, ArrowRight, Cpu } from "lucide-react";
 import { soundFX } from "../utils/audioFX";
 
@@ -26,6 +26,7 @@ export function WelcomeHero({ onStart }) {
 
   const triggerBoot = useCallback(() => {
     if (isBooting) return;
+    soundFX.playClick();
     soundFX.playPowerUp(1);
     setIsBooting(true);
   }, [isBooting]);

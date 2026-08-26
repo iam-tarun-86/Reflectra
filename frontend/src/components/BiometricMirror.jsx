@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import { useFaceTracker } from "../hooks/useFaceTracker";
 

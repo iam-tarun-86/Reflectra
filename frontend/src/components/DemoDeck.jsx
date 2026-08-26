@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Sparkles, Volume2 } from "lucide-react";
 
 export function DemoDeck({ onInjectEmotion, onVoiceTest }) {
