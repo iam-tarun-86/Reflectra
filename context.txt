@@ -219,3 +219,46 @@ Frontend shows: live video, emotion timeline, agent activity panel, session summ
 - Server restarted: 127.0.0.1:8000 PID 40248, health 200.
 - NOT done (blocked on user): LLM bench gate — user starts llama-server themselves (do NOT touch WSL/LLM). Once up: run .venv\Scripts\python.exe backend\bench_llm.py 10; record p95 in context.txt. Qwen GGUF swap also user-driven via swap_llm.ps1 (edit paths first).
 - Next: Phase 8 Vision Engine (VisionService singleton + detector bench).
+
+### Session 11 - 2026-08-26 — Brainwave-Style React UI Overhaul, Engine Bug Fixes & Master Launcher
+- Status: Project #51 (EmotionLens) Complete — Modern React + Tailwind Cyberpunk UI, Multi-Agent Engine Upgraded & Verified
+- College Context: Project Title "EmotionLens", Track: Deep Learning (DL), Pretrained Face Model + Multi-Agent Architecture.
+- Repository: https://github.com/iam-tarun-86/Reflectra (Branch: main)
+
+1. Engine & Algorithm Bug Fixes:
+   - Fixed State Agent Stall (agents/state.py): Replaced fixed window mod check with monotonic counter `self._total_events += 1`, emitting every 5 events (~1s) or on mood transition to ensure live duration, stability, and timeline never freeze.
+   - Fixed Governor Duplicate Shift Triggers (agents/governor.py): Added `_last_triggered_shift` and `_last_triggered_mood` tracking to prevent re-firing triggers during steady mood states.
+   - Refined LLM Sanitizer (agents/llm.py): Replaced aggressive `"step "` substring ban with regex `r"\bstep\s*\d+[\.\:\-]"` to preserve valid English prose reflections.
+   - Face Bounding Box & Valence Telemetry (agents/models.py, agents/vision.py, backend/app.py): Added `face_box: dict` to `EmotionEvent`, mapped DeepFace region `{x, y, w, h}`, and computed continuous bipolar Valence (-1.0 to +1.0) and Arousal (0.0 to 1.0) in real-time metadata.
+   - Canvas Rendering Polish: Implemented `window.devicePixelRatio` scaling to eliminate blurriness on High-DPI screens and clamped shift dot y-coordinates.
+
+2. React 18 + Vite + Tailwind CSS Architecture (Brainwave & Aceternity UI):
+   - Scaffolded modern React app in `frontend/` with Tailwind CSS, Lucide icons, and PostCSS.
+   - Custom Hooks: `useWebSocket.js` (binary JPEG frames + JSON metadata demuxing, FPS tracking), `useSpeech.js` (Web Speech API TTS), `useFaceTracker.js` (exponential smoothing for jitter-free face HUD).
+   - Cyberpunk Biometric Mirror (BiometricMirror.jsx): Live video feed, canvas-rendered L-shaped corner brackets `[ ]`, laser scanline sweep, and floating emotion badge (`😊 HAPPY 94%`).
+   - 2D Russell Circumplex Emotion Radar (EmotionRadar.jsx): Interactive 2D coordinate plane (Valence vs Arousal) with glowing cursor and particle trail.
+   - Multi-Agent Neural Pipeline (NeuralPipeline.jsx): 5-node animated decision flow (`Vision` -> `State` -> `Context` -> `Governor` -> `LLM`).
+   - Spoken Reflection & Audio Visualizer (SpokenReflection.jsx): 4-channel animated sinusoidal soundwave visualizer that dances during TTS playback.
+   - 7-Emotion Probability Spectrum (EmotionSpectrum.jsx): Animated gradient progress bars.
+   - 60s High-DPI Continuous Timeline (TimelineStream.jsx): Multi-colored emotion bands and floating valence wave curve.
+   - Simulation Demo Deck (DemoDeck.jsx): Instant 7-emotion injectors for live professor evaluations.
+   - Session Analytics Modal (AnalyticsModal.jsx): Metric tiles, transition history, closing LLM observation, and JSON export.
+
+3. Master Launcher & Verification Script (run.py, start.bat, start.ps1):
+   - Pre-flight checks: Python environment, port 8000 detection & auto-kill orphaned processes, Vite auto-build if `dist/` is missing, local LLM ping, and OpenCV webcam accessibility.
+   - Single-command execution: Serves compiled React app and FastAPI backend together at `http://127.0.0.1:8000`.
+   - Post-stop verification: Traps Ctrl+C/SIGINT, terminates entire process tree with `taskkill /F /T`, actively verifies port 8000 is closed, and logs confirmation.
+
+4. Git Milestones Pushed to Origin:
+   - Phase 1: 4e537c5 (Vite + React + Tailwind setup)
+   - Phase 2: bc26aa7 (Real-time hooks)
+   - Phase 3: 82b4448 (Brainwave visual system)
+   - Phase 4: c478849 (Biometric Mirror & Face HUD)
+   - Phase 5: 68ef0fc (2D Emotion Radar & Spectrum)
+   - Phase 6: 1c0edd6 (Neural Pipeline & Audio Soundwave)
+   - Phase 7: 927103c (Timeline, Demo Deck, Telemetry, Analytics Modal, App.jsx)
+   - Phase 8: a106e34 (Production build & FastAPI static integration)
+   - Launcher: 892cdc8 / 7f2081f (Master launcher & start scripts)
+
+5. Test Verification:
+   - 16/16 automated test suites passing in `pytest tests/` (100% pass rate).
