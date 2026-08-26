@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REFLECTRA — Full-Screen Edge-to-Edge PCB Spatial Hologram</title>
+  <title>REFLECTRA — Subtle Background Circuit Spatial Hologram</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
@@ -33,21 +33,21 @@
   <!-- === LAYER 0: Background Matrix Digital Rain === -->
   <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-20 pointer-events-none" style="z-index: 0;"></canvas>
 
-  <!-- === LAYER 1: Full-Screen Edge-to-Edge PCB Circuit Canvas === -->
-  <canvas id="circuitCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
+  <!-- === LAYER 1: Subtle, Clean Background PCB Circuit Canvas === -->
+  <canvas id="circuitCanvas" class="absolute inset-0 w-full h-full pointer-events-none opacity-60 transition-opacity duration-500" style="z-index: 1;"></canvas>
 
   <!-- Scanline CRT Texture Overlay -->
-  <div class="scanlines absolute inset-0 pointer-events-none opacity-30" style="z-index: 2;"></div>
+  <div class="scanlines absolute inset-0 pointer-events-none opacity-25" style="z-index: 2;"></div>
 
-  <!-- Dynamic Ambient Glow Blooms -->
-  <div id="bloom1" class="absolute w-[800px] h-[800px] rounded-full bg-sky-600/20 blur-[200px] pointer-events-none -top-24 -left-24 transition-colors duration-500" style="z-index: 0;"></div>
-  <div id="bloom2" class="absolute w-[800px] h-[800px] rounded-full bg-blue-600/20 blur-[200px] pointer-events-none -bottom-24 -right-24 transition-colors duration-500" style="z-index: 0;"></div>
+  <!-- Dynamic Soft Ambient Glow Blooms -->
+  <div id="bloom1" class="absolute w-[800px] h-[800px] rounded-full bg-sky-600/15 blur-[200px] pointer-events-none -top-24 -left-24 transition-colors duration-700" style="z-index: 0;"></div>
+  <div id="bloom2" class="absolute w-[800px] h-[800px] rounded-full bg-blue-600/15 blur-[200px] pointer-events-none -bottom-24 -right-24 transition-colors duration-700" style="z-index: 0;"></div>
 
-  <!-- === FLOATING SPATIAL HUD (FULL-SCREEN PCB NETWORK) === -->
+  <!-- === FLOATING SPATIAL HUD (CLEAN FOREGROUND / SUBTLE BACKGROUND) === -->
   <main id="mainCard" class="relative z-10 w-full max-w-2xl flex flex-col items-center text-center gap-6 transition-all duration-300">
 
     <!-- Top Floating Header Bar -->
-    <header class="flex items-center justify-between w-full border-b border-white/[0.12] pb-3 text-xs font-mono backdrop-blur-sm px-2">
+    <header class="flex items-center justify-between w-full border-b border-white/[0.1] pb-3 text-xs font-mono backdrop-blur-sm px-2">
       <div class="flex items-center gap-2">
         <span id="statusLed" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_10px_#38bdf8]"></span>
         <span class="text-sky-400 font-bold tracking-wider holo-text" id="brandTag">REFLECTRA</span>
@@ -56,7 +56,7 @@
       </div>
       <div class="flex items-center gap-3 text-[11px] text-slate-400">
         <span id="voltageMeter" class="text-sky-400 font-bold">120.0 V // STANDBY</span>
-        <button id="soundToggleBtn" class="px-2.5 py-0.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-slate-200 transition flex items-center gap-1.5 cursor-pointer border border-white/[0.12]">
+        <button id="soundToggleBtn" class="px-2.5 py-0.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 transition flex items-center gap-1.5 cursor-pointer border border-white/[0.1]">
           <span id="soundIcon">🔊</span>
           <span id="soundLabel" class="font-bold">AUDIO: ON</span>
         </button>
@@ -68,14 +68,14 @@
       
       <!-- Outermost Stator Ring -->
       <svg id="outerStator" class="absolute inset-0 w-full h-full spin-slow pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="94" fill="none" id="statorCircle1" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6, 6" opacity="0.45" />
-        <circle cx="100" cy="100" r="88" fill="none" id="statorCircle2" stroke="#0284c7" stroke-width="3" stroke-dasharray="20, 10" opacity="0.75" />
+        <circle cx="100" cy="100" r="94" fill="none" id="statorCircle1" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6, 6" opacity="0.4" />
+        <circle cx="100" cy="100" r="88" fill="none" id="statorCircle2" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="20, 10" opacity="0.65" />
       </svg>
 
       <!-- Counter-Rotating Rotor Solenoid Coils -->
       <svg id="innerRotor" class="absolute inset-2 w-60 h-60 spin-reverse pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1.5" stroke-dasharray="24, 12" />
-        <g id="rotorCoils" stroke-width="3">
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1.5" stroke-dasharray="24, 12" />
+        <g id="rotorCoils" stroke-width="2.5">
           <line x1="100" y1="18" x2="100" y2="28" stroke="#38bdf8" />
           <line x1="100" y1="172" x2="100" y2="182" stroke="#38bdf8" />
           <line x1="18" y1="100" x2="28" y2="100" stroke="#0284c7" />
@@ -128,10 +128,10 @@
     <!-- Floating Title & Description -->
     <div class="flex flex-col gap-2">
       <h1 id="coreTitle" class="text-3xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-sky-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-2xl">
-        EDGE-TO-EDGE PCB NETWORK
+        SPATIAL HOLOGRAPHIC HUD
       </h1>
       <p id="coreDesc" class="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed drop-shadow-md">
-        Full-screen motherboard circuit grid. Multi-branch copper bus lines and electron packets span edge-to-edge across the entire display.
+        Clean holographic power surge. Subtle, lightweight circuit traces flow in the background while the core harmonizes.
       </p>
     </div>
 
@@ -143,18 +143,18 @@
       </div>
       
       <!-- Multi-Segment Circuit Power Bar -->
-      <div class="relative w-full h-3.5 rounded-full bg-slate-900/80 border border-white/[0.25] overflow-hidden p-0.5 shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md">
+      <div class="relative w-full h-3.5 rounded-full bg-slate-900/80 border border-white/[0.2] overflow-hidden p-0.5 shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md">
         <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-400 transition-all duration-75 shadow-[0_0_20px_#38bdf8]" style="width: 0%;"></div>
       </div>
       
       <div id="stageStatusText" class="text-[11px] font-mono text-slate-300 truncate drop-shadow">
-        Click below or press SPACE to ignite full-screen PCB power surge...
+        Click below or press SPACE to ignite subtle background power surge...
       </div>
     </div>
 
     <!-- Floating Action Button -->
     <div class="flex flex-col items-center gap-2.5 w-full max-w-md">
-      <button id="igniteBtn" class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-sky-500 via-purple-600 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 shadow-[0_0_50px_rgba(56,189,248,0.6)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border border-white/[0.3] backdrop-blur-lg">
+      <button id="igniteBtn" class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-sky-500 via-purple-600 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 shadow-[0_0_45px_rgba(56,189,248,0.5)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border border-white/[0.25] backdrop-blur-lg">
         <span id="btnIcon" class="text-xl">⚡</span>
         <span id="btnText" class="tracking-wide uppercase">START POWER SURGE (SPACE / ENTER)</span>
       </button>
@@ -166,17 +166,17 @@
 
     <!-- Floating Telemetry Badges Strip -->
     <footer class="grid grid-cols-3 gap-3 w-full pt-3 text-center font-mono text-xs text-slate-300">
-      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.1] backdrop-blur-md shadow-lg">
+      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
         <span class="text-[10px] text-slate-400 block uppercase">CAPACITANCE</span>
         <span id="capValue" class="text-sky-400 font-bold transition-colors duration-300">12,000 µF</span>
       </div>
-      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.1] backdrop-blur-md shadow-lg">
+      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
         <span class="text-[10px] text-slate-400 block uppercase">BUS FREQUENCY</span>
         <span id="freqValue" class="text-purple-400 font-bold transition-colors duration-300">60 Hz</span>
       </div>
-      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.1] backdrop-blur-md shadow-lg">
-        <span class="text-[10px] text-slate-400 block uppercase">CIRCUIT BUS</span>
-        <span id="stateValue" class="text-emerald-400 font-bold transition-colors duration-300">36 ARTERIES</span>
+      <div class="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
+        <span class="text-[10px] text-slate-400 block uppercase">BACKGROUND BUS</span>
+        <span id="stateValue" class="text-emerald-400 font-bold transition-colors duration-300">SUBTLE MESH</span>
       </div>
     </footer>
   </main>
@@ -409,7 +409,7 @@
     const soundSynth = new CinematicPowerSurgeAudio();
   </script>
 
-  <!-- ==================== FULL-SCREEN EDGE-TO-EDGE PCB CIRCUIT VISUAL ENGINE ==================== -->
+  <!-- ==================== SUBTLE & CLEAN BACKGROUND PCB CIRCUIT VISUAL ENGINE ==================== -->
   <script>
     const rainCanvas = document.getElementById("rainCanvas");
     const circuitCanvas = document.getElementById("circuitCanvas");
@@ -447,28 +447,28 @@
         min: 0, max: 25,
         name: "CRYO CYAN",
         tag: "SPECTRUM: CRYO COLD",
-        primary: "#38bdf8", secondary: "#0284c7", glow: "rgba(56, 189, 248, 0.6)",
+        primary: "#38bdf8", secondary: "#0284c7", glow: "rgba(56, 189, 248, 0.45)",
         voltage: "120.0 V", freq: "60 Hz", state: "INITIALIZING",
       },
       {
         min: 25, max: 50,
         name: "NEURAL VIOLET",
         tag: "SPECTRUM: NEURAL VIOLET",
-        primary: "#c084fc", secondary: "#f43f5e", glow: "rgba(192, 132, 252, 0.7)",
+        primary: "#c084fc", secondary: "#f43f5e", glow: "rgba(192, 132, 252, 0.55)",
         voltage: "1.21 kV", freq: "240 Hz", state: "TENSOR ALIGNED",
       },
       {
         min: 50, max: 75,
         name: "SOLAR AMBER",
         tag: "SPECTRUM: SOLAR AMBER",
-        primary: "#fbbf24", secondary: "#f97316", glow: "rgba(251, 191, 36, 0.7)",
+        primary: "#fbbf24", secondary: "#f97316", glow: "rgba(251, 191, 36, 0.55)",
         voltage: "4.80 kV", freq: "440 Hz", state: "AFFECTIVE HARMONY",
       },
       {
         min: 75, max: 100,
         name: "EMERALD SUPERNOVA",
         tag: "SPECTRUM: EMERALD HARMONY",
-        primary: "#10b981", secondary: "#34d399", glow: "rgba(16, 185, 129, 0.8)",
+        primary: "#10b981", secondary: "#34d399", glow: "rgba(16, 185, 129, 0.65)",
         voltage: "10.0 kV", freq: "880 Hz", state: "EMPATHIC COHERENCE",
       }
     ];
@@ -480,41 +480,33 @@
       return CHROMATIC_STAGES[3];
     }
 
-    // --- FULL SCREEN RESPONSIVE PCB TRACES GENERATOR ---
+    // --- CLEAN, SPACED 16-BUS BACKGROUND PCB TRACES (NO MESS / CLEAN CENTER) ---
     let pcbTraces = [];
-    const NUM_TRACES = 36;
+    const NUM_TRACES = 16;
 
-    function buildEdgeToEdgePcbNetwork() {
+    function buildCleanPcbNetwork() {
       const maxDiag = Math.hypot(window.innerWidth, window.innerHeight) * 0.65;
       
       pcbTraces = Array.from({ length: NUM_TRACES }, (_, i) => {
-        const baseAngle = (i / NUM_TRACES) * Math.PI * 2;
-        const r1 = 120 + Math.random() * (maxDiag * 0.2);
-        const r2 = r1 + 80 + Math.random() * (maxDiag * 0.25);
-        const r3 = r2 + 100 + Math.random() * (maxDiag * 0.35);
-        const r4 = maxDiag * (1.05 + Math.random() * 0.25); // Overshoots all 4 corners
+        const baseAngle = (i / NUM_TRACES) * Math.PI * 2 + (Math.PI / 16);
+        
+        // Start gracefully outside the center HUD area
+        const rStart = 110; 
+        const r1 = rStart + 60 + (i % 3) * 40;
+        const r2 = r1 + 120 + (i % 2) * 60;
+        const r3 = maxDiag * 1.15; // Extends off-screen
 
-        const turnAngle1 = baseAngle + (i % 2 === 0 ? Math.PI / 4 : -Math.PI / 4);
-        const turnAngle2 = baseAngle + (i % 3 === 0 ? -Math.PI / 4 : (i % 2 === 0 ? Math.PI / 6 : -Math.PI / 6));
-
-        // Secondary bifurcation branch
-        const hasBranch = i % 2 === 0;
-        const branchR = r2;
-        const branchTurn = baseAngle + (i % 4 === 0 ? Math.PI / 2 : -Math.PI / 2);
-        const branchEndR = maxDiag * 1.1;
+        // Subtle, structured 45° bends (clean layout like real circuit boards)
+        const bendDir = (i % 2 === 0) ? 1 : -1;
+        const turnAngle = baseAngle + (Math.PI / 6) * bendDir;
 
         return {
           baseAngle,
-          r1, r2, r3, r4,
-          turnAngle1,
-          turnAngle2,
-          hasBranch,
-          branchR,
-          branchTurn,
-          branchEndR,
-          pulseOffset: Math.random() * 100,
-          pulseOffset2: (Math.random() * 100 + 50) % 100,
-          pulseSpeed: 1.6 + Math.random() * 2.2,
+          rStart,
+          r1, r2, r3,
+          turnAngle,
+          pulseOffset: (i * 25) % 100,
+          pulseSpeed: 1.2 + (i % 3) * 0.4,
         };
       });
     }
@@ -531,7 +523,7 @@
         hybridOrbCanvas.height = 96 * dpr;
       }
 
-      buildEdgeToEdgePcbNetwork();
+      buildCleanPcbNetwork();
     }
     window.addEventListener("resize", resizeCanvases);
     resizeCanvases();
@@ -562,11 +554,11 @@
         const isAlt = i % 2 === 0;
         rainCtx.fillStyle = isAlt ? theme.primary : theme.secondary;
         rainCtx.shadowColor = theme.primary;
-        rainCtx.shadowBlur = isSurging ? 12 : 4;
+        rainCtx.shadowBlur = isSurging ? 8 : 2;
 
         rainCtx.fillText(char, x, y);
 
-        const speed = isSurging ? 1.8 : 0.8;
+        const speed = isSurging ? 1.5 : 0.7;
         if (y > window.innerHeight && Math.random() > 0.975) {
           drops[i] = 0;
         }
@@ -575,37 +567,31 @@
       rainCtx.restore();
     }
 
-    // --- LAYER 1: FULL-SCREEN PCB MOTHERBOARD CIRCUIT NETWORK ---
+    // --- LAYER 1: LIGHT, CLEAN BACKGROUND PCB CIRCUIT ---
     const circuitCtx = circuitCanvas.getContext("2d");
 
-    function getPcbPoint(cx, cy, trace, progress) {
-      const x0 = cx + Math.cos(trace.baseAngle) * 90;
-      const y0 = cy + Math.sin(trace.baseAngle) * 90;
+    function getCleanPcbPoint(cx, cy, trace, progress) {
+      const x0 = cx + Math.cos(trace.baseAngle) * trace.rStart;
+      const y0 = cy + Math.sin(trace.baseAngle) * trace.rStart;
 
       const x1 = cx + Math.cos(trace.baseAngle) * trace.r1;
       const y1 = cy + Math.sin(trace.baseAngle) * trace.r1;
 
-      const x2 = x1 + Math.cos(trace.turnAngle1) * (trace.r2 - trace.r1);
-      const y2 = y1 + Math.sin(trace.turnAngle1) * (trace.r2 - trace.r1);
+      const x2 = x1 + Math.cos(trace.turnAngle) * (trace.r2 - trace.r1);
+      const y2 = y1 + Math.sin(trace.turnAngle) * (trace.r2 - trace.r1);
 
-      const x3 = x2 + Math.cos(trace.turnAngle2) * (trace.r3 - trace.r2);
-      const y3 = y2 + Math.sin(trace.turnAngle2) * (trace.r3 - trace.r2);
+      const x3 = x2 + Math.cos(trace.baseAngle) * (trace.r3 - trace.r2);
+      const y3 = y2 + Math.sin(trace.baseAngle) * (trace.r3 - trace.r2);
 
-      const x4 = x3 + Math.cos(trace.baseAngle) * (trace.r4 - trace.r3);
-      const y4 = y3 + Math.sin(trace.baseAngle) * (trace.r4 - trace.r3);
-
-      if (progress < 0.25) {
-        const t = progress / 0.25;
+      if (progress < 0.33) {
+        const t = progress / 0.33;
         return { x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t };
-      } else if (progress < 0.5) {
-        const t = (progress - 0.25) / 0.25;
+      } else if (progress < 0.66) {
+        const t = (progress - 0.33) / 0.33;
         return { x: x1 + (x2 - x1) * t, y: y1 + (y2 - y1) * t };
-      } else if (progress < 0.75) {
-        const t = (progress - 0.5) / 0.25;
-        return { x: x2 + (x3 - x2) * t, y: y2 + (y3 - y2) * t };
       } else {
-        const t = (progress - 0.75) / 0.25;
-        return { x: x3 + (x4 - x3) * t, y: y3 + (y4 - y3) * t };
+        const t = (progress - 0.66) / 0.34;
+        return { x: x2 + (x3 - x2) * t, y: y2 + (y3 - y2) * t };
       }
     }
 
@@ -622,89 +608,55 @@
       const theme = getCurrentStageTheme(surgeProgress);
 
       pcbTraces.forEach((trace, idx) => {
-        const x0 = cx + Math.cos(trace.baseAngle) * 90;
-        const y0 = cy + Math.sin(trace.baseAngle) * 90;
+        const x0 = cx + Math.cos(trace.baseAngle) * trace.rStart;
+        const y0 = cy + Math.sin(trace.baseAngle) * trace.rStart;
 
         const x1 = cx + Math.cos(trace.baseAngle) * trace.r1;
         const y1 = cy + Math.sin(trace.baseAngle) * trace.r1;
 
-        const x2 = x1 + Math.cos(trace.turnAngle1) * (trace.r2 - trace.r1);
-        const y2 = y1 + Math.sin(trace.turnAngle1) * (trace.r2 - trace.r1);
+        const x2 = x1 + Math.cos(trace.turnAngle) * (trace.r2 - trace.r1);
+        const y2 = y1 + Math.sin(trace.turnAngle) * (trace.r2 - trace.r1);
 
-        const x3 = x2 + Math.cos(trace.turnAngle2) * (trace.r3 - trace.r2);
-        const y3 = y2 + Math.sin(trace.turnAngle2) * (trace.r3 - trace.r2);
-
-        const x4 = x3 + Math.cos(trace.baseAngle) * (trace.r4 - trace.r3);
-        const y4 = y3 + Math.sin(trace.baseAngle) * (trace.r4 - trace.r3);
+        const x3 = x2 + Math.cos(trace.baseAngle) * (trace.r3 - trace.r2);
+        const y3 = y2 + Math.sin(trace.baseAngle) * (trace.r3 - trace.r2);
 
         const traceColor = idx % 2 === 0 ? theme.primary : theme.secondary;
 
-        // Draw Main 4-Segment Circuit Trace
+        // Light, delicate background copper trace (never intrusive)
         circuitCtx.beginPath();
         circuitCtx.moveTo(x0, y0);
         circuitCtx.lineTo(x1, y1);
         circuitCtx.lineTo(x2, y2);
         circuitCtx.lineTo(x3, y3);
-        circuitCtx.lineTo(x4, y4);
-        circuitCtx.strokeStyle = isSurging ? "rgba(255, 255, 255, 0.24)" : "rgba(255, 255, 255, 0.08)";
-        circuitCtx.lineWidth = isSurging ? 2.5 : 1.5;
+        circuitCtx.strokeStyle = isSurging ? "rgba(255, 255, 255, 0.12)" : "rgba(255, 255, 255, 0.04)";
+        circuitCtx.lineWidth = isSurging ? 1.5 : 1.0;
         circuitCtx.stroke();
 
-        // Branching secondary line
-        if (trace.hasBranch) {
-          const bx1 = x2;
-          const by1 = y2;
-          const bx2 = bx1 + Math.cos(trace.branchTurn) * (trace.branchEndR - trace.branchR);
-          const by2 = by1 + Math.sin(trace.branchTurn) * (trace.branchEndR - trace.branchR);
-
+        // Small, subtle micro via dots
+        [ {x: x1, y: y1}, {x: x2, y: y2} ].forEach((pt) => {
           circuitCtx.beginPath();
-          circuitCtx.moveTo(bx1, by1);
-          circuitCtx.lineTo(bx2, by2);
-          circuitCtx.strokeStyle = isSurging ? "rgba(255, 255, 255, 0.18)" : "rgba(255, 255, 255, 0.05)";
-          circuitCtx.lineWidth = isSurging ? 2 : 1;
-          circuitCtx.stroke();
-
-          // Branch solder pad
-          circuitCtx.beginPath();
-          circuitCtx.arc(bx2, by2, isSurging ? 4.5 : 3, 0, Math.PI * 2);
-          circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.3)";
-          circuitCtx.strokeStyle = traceColor;
-          circuitCtx.lineWidth = 1.2;
-          circuitCtx.fill();
-          circuitCtx.stroke();
-        }
-
-        // Bend solder via test-points along the trace
-        [ {x: x1, y: y1}, {x: x2, y: y2}, {x: x3, y: y3} ].forEach((pt, pidx) => {
-          circuitCtx.beginPath();
-          circuitCtx.arc(pt.x, pt.y, isSurging ? 3.5 : 2.5, 0, Math.PI * 2);
-          circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.25)";
+          circuitCtx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+          circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.15)";
           circuitCtx.fill();
         });
 
-        // Outer Edge Terminal Solder Pad (Off-screen boundary)
+        // Edge terminal pad
         circuitCtx.beginPath();
-        circuitCtx.arc(x4, y4, isSurging ? 6 : 4, 0, Math.PI * 2);
-        circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.4)";
-        circuitCtx.strokeStyle = traceColor;
-        circuitCtx.lineWidth = 1.5;
+        circuitCtx.arc(x3, y3, isSurging ? 3.5 : 2.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.2)";
         circuitCtx.fill();
-        circuitCtx.stroke();
 
-        // 2 Glowing Electron Packets per trace for rich full-screen flow
-        const surgeMultiplier = isSurging ? 4.5 : 1.0;
-        const prog1 = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset) % 100) / 100;
-        const prog2 = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset2) % 100) / 100;
+        // Small, elegant glowing electron packet
+        const surgeMultiplier = isSurging ? 3.5 : 1.0;
+        const progress = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset) % 100) / 100;
+        const pt = getCleanPcbPoint(cx, cy, trace, progress);
 
-        [prog1, prog2].forEach((p) => {
-          const pt = getPcbPoint(cx, cy, trace, p);
-          circuitCtx.beginPath();
-          circuitCtx.arc(pt.x, pt.y, isSurging ? 6 : 3.5, 0, Math.PI * 2);
-          circuitCtx.fillStyle = traceColor;
-          circuitCtx.shadowColor = traceColor;
-          circuitCtx.shadowBlur = isSurging ? 25 : 8;
-          circuitCtx.fill();
-        });
+        circuitCtx.beginPath();
+        circuitCtx.arc(pt.x, pt.y, isSurging ? 4 : 2.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = traceColor;
+        circuitCtx.shadowColor = traceColor;
+        circuitCtx.shadowBlur = isSurging ? 14 : 5;
+        circuitCtx.fill();
       });
 
       circuitCtx.restore();
@@ -765,7 +717,7 @@
 
     const STAGE_EVENTS = [
       { pct: 25, stage: 1, text: "⚡ STAGE 1/4: CRYO CYAN BOOT", status: "Magnetic coil stator charging (120V ➔ 480V)..." },
-      { pct: 50, stage: 2, text: "🧠 STAGE 2/4: NEURAL VIOLET ALIGNMENT", status: "Full-screen tensor motherboard bus engaged across 36 tracks..." },
+      { pct: 50, stage: 2, text: "🧠 STAGE 2/4: NEURAL VIOLET ALIGNMENT", status: "Subtle background bus engaged across 16 tracks..." },
       { pct: 75, stage: 3, text: "🧭 STAGE 3/4: SOLAR AMBER RESONANCE", status: "Circumplex affective vector plane synchronized..." },
       { pct: 100, stage: 4, text: "🔮 STAGE 4/4: EMERALD HARMONY SUPERNOVA", status: "Supercharged! Neural Mirror Core 100% Operational." },
     ];
@@ -807,7 +759,7 @@
           stageStatusText.innerText = "Magnetic coil stator charging (120V ➔ 480V)...";
         } else if (surgeProgress < 50) {
           stageLabel.innerText = "🧠 STAGE 2/4: NEURAL VIOLET ALIGNMENT";
-          stageStatusText.innerText = "Full-screen tensor motherboard bus engaged across 36 tracks...";
+          stageStatusText.innerText = "Subtle background bus engaged across 16 tracks...";
         } else if (surgeProgress < 75) {
           stageLabel.innerText = "🧭 STAGE 3/4: SOLAR AMBER RESONANCE";
           stageStatusText.innerText = "Circumplex affective vector plane synchronized...";
