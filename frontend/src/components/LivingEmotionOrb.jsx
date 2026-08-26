@@ -46,9 +46,9 @@ export function LivingEmotionOrb({
       ctx.clearRect(0, 0, W, H);
 
       const theme = MOOD_GRADIENTS[dominantMood] || MOOD_GRADIENTS.neutral;
-      const baseRadius = 38 + (isSpeaking ? Math.sin(time * 8) * 6 : 0) + arousal * 8;
+      const baseRadius = 38 + (isSpeaking ? Math.sin(time * 8) * 6 : 0) + arousal * 8 + valence * 3;
       const turbulence = 6 + (1 - stability) * 12 + (isSpeaking ? 8 : 0);
-      const speed = 0.8 + arousal * 1.6;
+      const speed = 0.8 + arousal * 1.6 + Math.abs(valence) * 0.4;
 
       // 1. Outer Ambient Glow
       const glowGrad = ctx.createRadialGradient(cx, cy, baseRadius * 0.2, cx, cy, baseRadius * 2.2);

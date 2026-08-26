@@ -90,7 +90,7 @@ def preflight_checks():
 
     # 4. Check Local LLM Server
     try:
-        req = urllib.request.Request(f"{LLM_URL}/models", headers={"User-Agent": "EmotionLens"})
+        req = urllib.request.Request(f"{LLM_URL}/models", headers={"User-Agent": "REFLECTRA"})
         with urllib.request.urlopen(req, timeout=1.5) as resp:
             if resp.status == 200:
                 print(f"[✓] Local LLM Server    : Online ({LLM_URL})")
@@ -114,7 +114,7 @@ def preflight_checks():
 
 def start_backend() -> subprocess.Popen:
     """Launch the FastAPI + WebSockets + Multi-Agent server."""
-    print("\n[START] Launching EmotionLens Core Engine on http://127.0.0.1:8000...")
+    print("\n[START] Launching REFLECTRA Core Engine on http://127.0.0.1:8000...")
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
 
@@ -198,7 +198,7 @@ def main():
 
         # Print Interactive Instructions Banner
         print("\n" + "=" * 65)
-        print("  🌟 EMOTIONLENS IS NOW RUNNING!")
+        print("  🌟 REFLECTRA IS NOW RUNNING!")
         print("=" * 65)
         print("  • URL              : http://127.0.0.1:8000")
         print("  • Architecture     : React 18 + Tailwind + 5-Agent Neural Pipeline")

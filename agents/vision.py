@@ -23,7 +23,7 @@ class VisionAgent:
     at a controlled sample rate. Outputs EmotionEvent objects via a queue.
     """
 
-    def __init__(self, sample_rate_hz: float = 5.0, detection_backend: str = "retinaface", camera_backend: int = None):
+    def __init__(self, sample_rate_hz: float = 5.0, detection_backend: str = "retinaface"):
         """
         Args:
             sample_rate_hz: How many inferences per second (5-10 recommended).
@@ -35,12 +35,6 @@ class VisionAgent:
         self._running = False
         self._last_analysis_time = 0.0
         self._model_loaded = False
-        # On Windows, DirectShow avoids MSMF camera lock issues
-        if camera_backend is None:
-            import platform
-            self._camera_backend = cv2.CAP_DSHOW if platform.system() == "Windows" else 0
-        else:
-            self._camera_backend = camera_backend
 
     def _load_model(self):
         """Pre-load DeepFace model in background thread."""
@@ -130,7 +124,7 @@ class VisionAgent:
 
             return EmotionEvent(
                 emotion=emotion,
-                confidence=confidence,
+                confidence=face_conf_val,
                 timestamp=datetime.now(),
                 face_detected=True,
                 raw_scores={k: v / 100.0 for k, v in emotion_scores.items()},
@@ -138,7 +132,7 @@ class VisionAgent:
             )
 
         except Exception as e:
-            logger.debug(f"Analysis failed: {e}")
+            logger.warning(f"Analysis error in frame processing: {e}")
             return EmotionEvent(
                 emotion=Emotion.NEUTRAL,
                 confidence=0.0,

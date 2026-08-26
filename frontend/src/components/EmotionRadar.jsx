@@ -52,9 +52,9 @@ export function EmotionRadar({ valence = 0, arousal = 0.5, moodColor = "#c084fc"
     const targetX = ((valence + 1) / 2) * (W - 28) + 14;
     const targetY = (1 - arousal) * (H - 28) + 14;
 
-    // Push to trail
+    // Push to trail (30-second trajectory history at 2Hz metadata updates)
     trailRef.current.push({ x: targetX, y: targetY, alpha: 1.0 });
-    if (trailRef.current.length > 35) trailRef.current.shift();
+    if (trailRef.current.length > 60) trailRef.current.shift();
 
     // Draw Continuous Glowing Comet Ribbon
     if (trailRef.current.length > 1) {

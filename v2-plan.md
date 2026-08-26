@@ -1,6 +1,6 @@
 # Reflectra v2 — Implementation Plan (Phases 7–16)
 
-Continues from `emotionlens-implementation-plan.md` (Phases 0–6 complete).
+Continues from `reflectra-implementation-plan.md` (Phases 0–6 complete).
 Protocol: read `context.txt` first, append after every phase. Never overwrite.
 
 ## Locked Decisions

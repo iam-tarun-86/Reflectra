@@ -50,6 +50,8 @@ export default function App() {
 
   const lastLoggedRawRef = useRef(0);
   const lastReflectionRef = useRef(currentReflection);
+  const lastHandledMoodRef = useRef(null);
+  const lastReactionKeyRef = useRef(null);
 
   const handleStart = useCallback(() => {
     setIsStarted(true);
@@ -70,9 +72,10 @@ export default function App() {
     if (metadata.mood) {
       const mood = metadata.mood;
       const timeSec = (Date.now() - sessionStartTime) / 1000;
-      const isShift = mood.current !== mood.previous && mood.duration < 2.5;
+      const isShift = lastHandledMoodRef.current !== null && lastHandledMoodRef.current !== mood.current;
 
       if (isShift) {
+        lastHandledMoodRef.current = mood.current;
         soundFX.playEmotionShift(mood.current);
         setShiftHistory((prev) => [
           ...prev.slice(-15),
@@ -83,6 +86,8 @@ export default function App() {
           },
         ]);
         addLog("State", `Shift: ${mood.previous} ➔ ${mood.current} (${mood.trend} ${Math.round(mood.stability * 100)}%)`);
+      } else if (lastHandledMoodRef.current === null) {
+        lastHandledMoodRef.current = mood.current;
       }
 
       setTimelineData((prev) => [
@@ -99,10 +104,14 @@ export default function App() {
 
     // 2. Reaction Governor
     if (metadata.reaction) {
-      setGovernorStatus("TRIGGER");
-      addLog("Governor", `TRIGGER [${metadata.reaction.trigger_type}] ${metadata.reaction.from}➔${metadata.reaction.to}: ${metadata.reaction.reason}`);
-      setTimeout(() => setGovernorStatus("COOLDOWN"), 2000);
-      setTimeout(() => setGovernorStatus("IDLE"), 4000);
+      const rxKey = `${metadata.reaction.from}->${metadata.reaction.to}_${metadata.reaction.reason}_${metadata.reaction.trigger_type}`;
+      if (lastReactionKeyRef.current !== rxKey) {
+        lastReactionKeyRef.current = rxKey;
+        setGovernorStatus("TRIGGER");
+        addLog("Governor", `TRIGGER [${metadata.reaction.trigger_type}] ${metadata.reaction.from}➔${metadata.reaction.to}: ${metadata.reaction.reason}`);
+        setTimeout(() => setGovernorStatus("COOLDOWN"), 2000);
+        setTimeout(() => setGovernorStatus("IDLE"), 4000);
+      }
     }
 
     // 3. LLM Response & Speech Synthesis
@@ -142,6 +151,9 @@ export default function App() {
       if (k === "2") sendDebugEmotion("sad");
       if (k === "3") sendDebugEmotion("surprise");
       if (k === "4") sendDebugEmotion("neutral");
+      if (k === "5") sendDebugEmotion("angry");
+      if (k === "6") sendDebugEmotion("fear");
+      if (k === "7") sendDebugEmotion("disgust");
     };
 
     window.addEventListener("keydown", handleKeyDown);

@@ -1,5 +1,5 @@
 """
-Reflectra / EmotionLens — V2 Engine & Bugfix Verification Suite
+REFLECTRA — V2 Engine & Bugfix Verification Suite
 """
 import asyncio
 import time
@@ -97,3 +97,32 @@ def test_face_box_in_emotion_event():
         face_box=box,
     )
     assert event.face_box == box
+
+
+def test_vision_agent_analyze_frame_with_mock(monkeypatch):
+    """Verify VisionAgent._analyze_frame returns proper EmotionEvent without NameError."""
+    import numpy as np
+    from agents.vision import VisionAgent
+
+    agent = VisionAgent(sample_rate_hz=5.0)
+
+    # Mock DeepFace.analyze
+    mock_result = [{
+        "emotion": {"happy": 91.5, "neutral": 5.0, "sad": 3.5},
+        "dominant_emotion": "happy",
+        "face_confidence": 0.94,
+        "region": {"x": 100, "y": 120, "w": 250, "h": 260}
+    }]
+
+    import deepface
+    monkeypatch.setattr(deepface.DeepFace, "analyze", lambda *args, **kwargs: mock_result)
+
+    dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+    event = agent._analyze_frame(dummy_frame)
+
+    assert event.face_detected is True
+    assert event.emotion == Emotion.HAPPY
+    assert event.confidence == 0.94
+    assert event.face_box == {"x": 100, "y": 120, "w": 250, "h": 260}
+    assert round(event.raw_scores["happy"], 3) == 0.915
+

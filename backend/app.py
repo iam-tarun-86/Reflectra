@@ -156,7 +156,7 @@ async def video_websocket(websocket: WebSocket):
     )
     reaction_queue: asyncio.Queue = asyncio.Queue(maxsize=10)
     llm_queue: asyncio.Queue = asyncio.Queue(maxsize=10)
-    llm_agent = LLMResponseAgent(context=context_agent, base_url="http://localhost:8085/v1", model="gemma-4-e4b", max_tokens=350)
+    llm_agent = LLMResponseAgent(context=context_agent, base_url=LLM_BASE_URL, model=LLM_MODEL, max_tokens=350)
 
     # Start agent background tasks
     vision_task = asyncio.create_task(
@@ -262,18 +262,27 @@ async def video_websocket(websocket: WebSocket):
                         "from": last_reaction.from_emotion.value,
                         "to": last_reaction.to_emotion.value,
                     }
+                    # Clear last_reaction so each trigger is emitted only once per event
+                    last_reaction = None
+
                 if last_llm:
                     meta["llm"] = {
                         "text": last_llm.text,
                         "latency_ms": round(last_llm.latency_ms, 1),
                         "model": last_llm.model,
                     }
+                    # Clear last_llm after dispatching to frontend
+                    last_llm = None
+
                 meta_bytes = json.dumps(meta).encode()
                 header = len(meta_bytes).to_bytes(4, "big")
                 async with send_lock:
                     await websocket.send_bytes(header + meta_bytes)
-            except Exception:
+            except (asyncio.CancelledError, WebSocketDisconnect):
                 break
+            except Exception as e:
+                logger.warning(f"Error in metadata_sender (will retry): {e}")
+                await asyncio.sleep(0.5)
 
     meta_task = asyncio.create_task(metadata_sender())
 
@@ -343,7 +352,6 @@ async def video_websocket(websocket: WebSocket):
 # Serve frontend static files (assets, JS, CSS, etc.)
 if (FRONTEND_DIST / "assets").exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="assets")
-app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 
 if __name__ == "__main__":

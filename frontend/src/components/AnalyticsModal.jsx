@@ -14,9 +14,16 @@ export function AnalyticsModal({
 }) {
   const [closingObservation, setClosingObservation] = useState("Analyzing session patterns with local LLM...");
   const [isFetchingSummary, setIsFetchingSummary] = useState(false);
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      hasFetchedRef.current = false;
+      return;
+    }
+
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
 
     let isMounted = true;
     setIsFetchingSummary(true);
@@ -74,7 +81,7 @@ export function AnalyticsModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, dominantMood, lastReflection, shiftHistory, timelineData, onSpeak]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

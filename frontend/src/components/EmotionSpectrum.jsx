@@ -77,11 +77,11 @@ export function EmotionSpectrum({
                 <span className="font-semibold text-slate-300 capitalize text-[11px]">{label}</span>
                 <div className="h-2 rounded-full bg-white/[0.05] overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-300 shadow-[0_0_8px]"
+                    className="h-full rounded-full transition-all duration-300"
                     style={{
                       width: `${pct}%`,
                       backgroundColor: color,
-                      shadowColor: color,
+                      boxShadow: `0 0 8px ${color}88`,
                     }}
                   />
                 </div>

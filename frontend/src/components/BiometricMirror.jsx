@@ -104,15 +104,26 @@ export function BiometricMirror({
   useEffect(() => {
     if (!lastEchoBlob || !echoCanvasRef.current) return;
     const url = URL.createObjectURL(lastEchoBlob.blob);
+    let isCleanedUp = false;
     const img = new Image();
     img.onload = () => {
-      const ctx = echoCanvasRef.current?.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(img, 0, 0, 640, 480);
+      if (!isCleanedUp) {
+        const ctx = echoCanvasRef.current?.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, 640, 480);
+        }
       }
       URL.revokeObjectURL(url);
     };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+    };
     img.src = url;
+
+    return () => {
+      isCleanedUp = true;
+      URL.revokeObjectURL(url);
+    };
   }, [lastEchoBlob]);
 
   // Holographic JARVIS-Style HUD Canvas Drawing Loop
