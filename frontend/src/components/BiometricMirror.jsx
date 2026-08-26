@@ -1,15 +1,15 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Camera, Eye, Radio, Sparkles } from "lucide-react";
+import { Eye, Radio, Sparkles, Sliders } from "lucide-react";
 import { useFaceTracker } from "../hooks/useFaceTracker";
 
 const MOOD_COLORS = {
   happy: "#10b981",
-  sad: "#3b82f6",
-  angry: "#ef4444",
-  surprise: "#f59e0b",
-  fear: "#a855f7",
-  disgust: "#84cc16",
-  neutral: "#64748b",
+  sad: "#38bdf8",
+  angry: "#f43f5e",
+  surprise: "#fbbf24",
+  fear: "#c084fc",
+  disgust: "#a3e635",
+  neutral: "#94a3b8",
 };
 
 export function BiometricMirror({
@@ -115,7 +115,7 @@ export function BiometricMirror({
     img.src = url;
   }, [lastEchoBlob]);
 
-  // Cyber HUD Canvas Drawing Loop
+  // Holographic JARVIS-Style HUD Canvas Drawing Loop
   useEffect(() => {
     let animId = null;
     const canvas = hudCanvasRef.current;
@@ -129,7 +129,7 @@ export function BiometricMirror({
       ctx.clearRect(0, 0, W, H);
 
       const smoothed = getSmoothedBox(faceBox, isFaceDetected);
-      const moodCol = MOOD_COLORS[dominantMood] || "#64748b";
+      const moodCol = MOOD_COLORS[dominantMood] || "#94a3b8";
 
       if (isFaceDetected && smoothed) {
         // Mirrored coordinate calculation
@@ -138,12 +138,14 @@ export function BiometricMirror({
         const bw = smoothed.w;
         const bh = smoothed.h;
 
-        // Cyber L-Brackets
-        const cornerLen = Math.min(22, bw * 0.22);
+        ctx.save();
+
+        // 1. Cyber L-Brackets with Radiant Screen Glow
+        const cornerLen = Math.min(26, bw * 0.25);
         ctx.strokeStyle = moodCol;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.shadowColor = moodCol;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 14;
 
         // Top-Left
         ctx.beginPath();
@@ -173,15 +175,69 @@ export function BiometricMirror({
         ctx.lineTo(bx + bw, by + bh - cornerLen);
         ctx.stroke();
 
+        // 2. Center Crosshair
+        const cx = bx + bw / 2;
+        const cy = by + bh * 0.46;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.beginPath();
+        ctx.moveTo(cx - 7, cy);
+        ctx.lineTo(cx + 7, cy);
+        ctx.moveTo(cx, cy - 7);
+        ctx.lineTo(cx, cy + 7);
+        ctx.stroke();
+
+        // 3. Eye Tracking Vector Reticles
+        const eyeY = by + bh * 0.36;
+        const leftEyeX = bx + bw * 0.32;
+        const rightEyeX = bx + bw * 0.68;
+        const eyeR = Math.max(7, bw * 0.07);
+
+        ctx.strokeStyle = moodCol;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(leftEyeX, eyeY, eyeR, 0, Math.PI * 2);
+        ctx.arc(rightEyeX, eyeY, eyeR, 0, Math.PI * 2);
+        ctx.stroke();
+
         ctx.shadowBlur = 0; // Reset shadow
 
-        // Floating Emotion Pill Above Face
+        // 4. Floating Holographic Leader-Line Telemetry Tag
+        const tagX = bx + bw + 18;
+        const tagY = by + 12;
+
+        if (tagX + 130 < W) {
+          // Leader Line
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx + bw, by + 18);
+          ctx.lineTo(tagX, tagY);
+          ctx.lineTo(tagX + 120, tagY);
+          ctx.stroke();
+
+          // Pinned Badge
+          ctx.fillStyle = "rgba(10, 15, 28, 0.85)";
+          ctx.fillRect(tagX, tagY + 2, 120, 32);
+          ctx.strokeStyle = moodCol;
+          ctx.strokeRect(tagX, tagY + 2, 120, 32);
+
+          ctx.fillStyle = moodCol;
+          ctx.font = "bold 10px 'JetBrains Mono', monospace";
+          ctx.fillText(`AFFECT: ${dominantMood.toUpperCase()}`, tagX + 6, tagY + 15);
+
+          ctx.fillStyle = "#cbd5e1";
+          ctx.font = "9px 'JetBrains Mono', monospace";
+          ctx.fillText(`STAB: ${Math.round(stability * 100)}% | VAL: ${valence >= 0 ? '+' : ''}${valence.toFixed(2)}`, tagX + 6, tagY + 28);
+        }
+
+        // Top Pill
         const pillH = 26;
-        const pillW = Math.max(120, bw * 0.7);
+        const pillW = Math.max(130, bw * 0.72);
         const pillX = bx + bw / 2 - pillW / 2;
         const pillY = Math.max(8, by - pillH - 8);
 
-        ctx.fillStyle = "rgba(7, 10, 18, 0.85)";
+        ctx.fillStyle = "rgba(10, 15, 28, 0.9)";
         ctx.beginPath();
         ctx.roundRect(pillX, pillY, pillW, pillH, 6);
         ctx.fill();
@@ -198,19 +254,21 @@ export function BiometricMirror({
           pillX + pillW / 2,
           pillY + pillH / 2
         );
+
+        ctx.restore();
       } else {
         // Ambient Face Scanner Guide
         const time = performance.now() * 0.0015;
         const scanY = (Math.sin(time) * 0.4 + 0.5) * H;
 
-        ctx.strokeStyle = "rgba(192, 132, 252, 0.3)";
+        ctx.strokeStyle = "rgba(192, 132, 252, 0.35)";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(W * 0.25, scanY);
         ctx.lineTo(W * 0.75, scanY);
         ctx.stroke();
 
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
         ctx.beginPath();
         ctx.ellipse(W / 2, H / 2, W * 0.22, H * 0.3, 0, 0, Math.PI * 2);
         ctx.stroke();
@@ -221,19 +279,26 @@ export function BiometricMirror({
     return () => {
       if (animId) cancelAnimationFrame(animId);
     };
-  }, [faceBox, isFaceDetected, dominantMood, stability, getSmoothedBox]);
+  }, [faceBox, isFaceDetected, dominantMood, stability, valence, getSmoothedBox]);
+
+  const moodCol = MOOD_COLORS[dominantMood] || "#94a3b8";
 
   return (
-    <div className="glass-panel rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden shadow-2xl">
+    <div
+      className="glass-panel rounded-2xl p-4 flex flex-col gap-3 relative overflow-hidden shadow-2xl transition-all duration-700"
+      style={{
+        boxShadow: `0 10px 40px -10px ${moodCol}25, 0 0 0 1px ${moodCol}30`,
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
           <Eye className="w-4 h-4 text-purple-400" />
-          <span>Biometric Mirror & Face Telemetry</span>
+          <span>Biometric Mirror & JARVIS Face HUD 2.0</span>
         </div>
 
         {/* View Toggle */}
-        <div className="flex gap-1 p-1 rounded-lg bg-slate-900/80 border border-white/[0.08]">
+        <div className="flex gap-1 p-1 rounded-lg bg-slate-900/90 border border-white/[0.12]">
           <button
             onClick={() => setViewMode("mirror")}
             className={`px-2.5 py-0.5 rounded-md text-[11px] font-semibold transition-all ${
@@ -258,7 +323,7 @@ export function BiometricMirror({
       </div>
 
       {/* Video Viewport Container */}
-      <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black/80 border border-white/[0.08] shadow-inner flex items-center justify-center">
+      <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-black/85 border border-white/[0.12] shadow-inner flex items-center justify-center">
         {cameraError ? (
           <div className="text-center p-6 text-rose-400 text-sm">
             <p className="font-bold">Camera Access Failed</p>
@@ -287,7 +352,7 @@ export function BiometricMirror({
               }`}
             />
 
-            {/* Cyber HUD Canvas Overlay */}
+            {/* Holographic Cyber HUD Canvas Overlay */}
             <canvas
               ref={hudCanvasRef}
               width={640}
@@ -296,16 +361,16 @@ export function BiometricMirror({
             />
 
             {/* Bottom Live Telemetry Overlay */}
-            <div className="absolute bottom-3 left-3 z-20 flex items-center gap-3 px-3 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-white/[0.08] text-[11px] font-mono text-slate-300">
+            <div className="absolute bottom-3 left-3 z-20 flex items-center gap-3 px-3 py-1 rounded-lg bg-black/75 backdrop-blur-md border border-white/[0.1] text-[11px] font-mono text-slate-200">
               <span className="flex items-center gap-1.5">
                 <span className="text-slate-400">FPS:</span>
                 <b className="text-emerald-400">{fps}</b>
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <span className="text-slate-400">FACE:</span>
+                <span className="text-slate-400">TRACKING:</span>
                 <b className={isFaceDetected ? "text-emerald-400" : "text-rose-400"}>
-                  {isFaceDetected ? "TRACKED" : "SEARCHING"}
+                  {isFaceDetected ? "LOCKED" : "SEARCHING"}
                 </b>
               </span>
               <span>•</span>
