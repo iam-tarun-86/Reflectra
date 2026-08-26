@@ -1,0 +1,31 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Node / Frontend
+node_modules/
+dist/
+.npm/
+
+# Large media files
+*.mp4
+*.avi
+*.mkv
+
+# Temporary & cache folders
+.freebuff/
+*.log
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
