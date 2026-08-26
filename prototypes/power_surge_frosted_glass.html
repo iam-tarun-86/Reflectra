@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REFLECTRA — Ultra-Frosted Prismatic Glassmorphism</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #030712; color: #f8fafc; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    
+    @keyframes spin-cw  { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes spin-ccw { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+    @keyframes screen-shake-subtle {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 1.5px); }
+      50% { transform: translate(2px, -1.5px); }
+      75% { transform: translate(-1.5px, -2px); }
+    }
+
+    @keyframes screen-shake-intense {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-4px, 3px) rotate(-0.5deg); }
+      40% { transform: translate(4px, -3px) rotate(0.5deg); }
+      60% { transform: translate(-3px, -4px); }
+      80% { transform: translate(3px, 4px); }
+    }
+    
+    .spin-slow    { animation: spin-cw 22s linear infinite; }
+    .spin-reverse { animation: spin-ccw 14s linear infinite; }
+    .spin-fast    { animation: spin-cw 3.5s linear infinite; }
+    .shake-subtle { animation: screen-shake-subtle 0.12s ease-in-out infinite; }
+    .shake-intense { animation: screen-shake-intense 0.08s ease-in-out infinite; }
+
+    /* Ultra-Frosted Glass Panel */
+    .frosted-glass {
+      background: rgba(15, 23, 42, 0.28);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 25px 90px -15px rgba(0, 0, 0, 0.7);
+    }
+
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden select-none">
+
+  <!-- === LAYER 0: Background Matrix Digital Rain === -->
+  <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-35 pointer-events-none" style="z-index: 0;"></canvas>
+
+  <!-- === LAYER 1: Power Surge PCB Circuit Canvas === -->
+  <canvas id="circuitCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
+
+  <!-- Scanline CRT Texture Overlay -->
+  <div class="scanlines absolute inset-0 pointer-events-none opacity-40" style="z-index: 2;"></div>
+
+  <!-- Dynamic Ambient Glow Blooms -->
+  <div id="bloom1" class="absolute w-[700px] h-[700px] rounded-full bg-sky-600/25 blur-[180px] pointer-events-none -top-24 -left-24 transition-colors duration-500" style="z-index: 0;"></div>
+  <div id="bloom2" class="absolute w-[700px] h-[700px] rounded-full bg-rose-600/20 blur-[180px] pointer-events-none -bottom-24 -right-24 transition-colors duration-500" style="z-index: 0;"></div>
+
+  <!-- === ULTRA-FROSTED GLASS CONTAINER === -->
+  <main id="mainCard" class="frosted-glass relative z-10 w-full max-w-2xl rounded-3xl p-6 md:p-8 flex flex-col items-center text-center gap-5 transition-all duration-300">
+
+    <!-- Top Glass Header -->
+    <header class="flex items-center justify-between w-full border-b border-white/[0.12] pb-3 text-xs font-mono">
+      <div class="flex items-center gap-2">
+        <span id="statusLed" class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_10px_#38bdf8]"></span>
+        <span class="text-sky-400 font-bold tracking-wider" id="brandTag">REFLECTRA</span>
+        <span class="text-slate-500">/</span>
+        <span id="spectrumStateTag" class="text-sky-300 font-bold tracking-wider">FROSTED GLASSMORPHISM</span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-300">
+        <span id="voltageMeter" class="text-sky-400 font-bold">120.0 V // STANDBY</span>
+        <button id="soundToggleBtn" class="px-2.5 py-0.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.18] text-slate-200 transition flex items-center gap-1.5 cursor-pointer border border-white/[0.15]">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel" class="font-bold">AUDIO: ON</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Center Prismatic Liquid Core -->
+    <section aria-label="Center Core Display" class="relative flex items-center justify-center w-64 h-64 my-1">
+      
+      <!-- Outermost Stator Ring -->
+      <svg id="outerStator" class="absolute inset-0 w-full h-full spin-slow pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="94" fill="none" id="statorCircle1" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6, 6" opacity="0.45" />
+        <circle cx="100" cy="100" r="88" fill="none" id="statorCircle2" stroke="#0284c7" stroke-width="3" stroke-dasharray="20, 10" opacity="0.75" />
+      </svg>
+
+      <!-- Counter-Rotating Rotor Solenoid Coils -->
+      <svg id="innerRotor" class="absolute inset-2 w-60 h-60 spin-reverse pointer-events-none transition-all duration-300" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1.5" stroke-dasharray="24, 12" />
+        <g id="rotorCoils" stroke-width="3">
+          <line x1="100" y1="18" x2="100" y2="28" stroke="#38bdf8" />
+          <line x1="100" y1="172" x2="100" y2="182" stroke="#38bdf8" />
+          <line x1="18" y1="100" x2="28" y2="100" stroke="#0284c7" />
+          <line x1="172" y1="100" x2="182" y2="100" stroke="#0284c7" />
+          <line x1="42" y1="42" x2="50" y2="50" stroke="#38bdf8" />
+          <line x1="158" y1="158" x2="150" y2="150" stroke="#38bdf8" />
+          <line x1="158" y1="42" x2="150" y2="50" stroke="#0284c7" />
+          <line x1="42" y1="158" x2="50" y2="150" stroke="#0284c7" />
+        </g>
+      </svg>
+
+      <!-- PRISMATIC LIQUID HYBRID CORE -->
+      <div id="core-hybrid-view" class="relative w-44 h-44 flex items-center justify-center transition-transform duration-300">
+        
+        <!-- Outer Prismatic Hexagonal Diffraction Crystals -->
+        <svg id="hybridIrisSvg" class="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300" viewBox="0 0 160 160">
+          <defs>
+            <linearGradient id="dynGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" id="grad1Stop1" stop-color="#38bdf8" />
+              <stop offset="50%" id="grad1Stop2" stop-color="#0284c7" />
+              <stop offset="100%" id="grad1Stop3" stop-color="#6366f1" />
+            </linearGradient>
+            <linearGradient id="dynGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" id="grad2Stop1" stop-color="#0284c7" />
+              <stop offset="50%" id="grad2Stop2" stop-color="#38bdf8" />
+              <stop offset="100%" id="grad2Stop3" stop-color="#a855f7" />
+            </linearGradient>
+          </defs>
+
+          <!-- Hexagonal Crystal Facets -->
+          <polygon id="hexOuter" points="80,10 140,45 140,115 80,150 20,115 20,45" fill="none" stroke="url(#dynGrad1)" stroke-width="2.5" stroke-dasharray="10, 5" opacity="0.9" />
+          <polygon id="hexInner" points="80,22 130,50 130,110 80,138 30,110 30,50" fill="none" stroke="url(#dynGrad2)" stroke-width="2" opacity="0.85" />
+
+          <!-- Expanding Prism Aperture Blades -->
+          <g id="irisBlades" class="transition-transform duration-300" style="transform-origin: 80px 80px;">
+            <path id="blade1" d="M80,32 L115,80 L80,128 Z" fill="url(#dynGrad1)" fill-opacity="0.3" stroke="#38bdf8" stroke-width="1.5" />
+            <path id="blade2" d="M80,32 L45,80 L80,128 Z" fill="url(#dynGrad2)" fill-opacity="0.3" stroke="#0284c7" stroke-width="1.5" />
+            <line x1="80" y1="16" x2="80" y2="144" stroke="#ffffff" stroke-width="1" opacity="0.85" />
+            <line x1="16" y1="80" x2="144" y2="80" stroke="#ffffff" stroke-width="1" opacity="0.85" />
+          </g>
+        </svg>
+
+        <!-- Nested Inner Living Liquid Emotion Orb -->
+        <div class="relative w-24 h-24 flex items-center justify-center rounded-full overflow-hidden">
+          <canvas id="hybridOrbCanvas" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Glass Title & Subtitle -->
+    <div class="flex flex-col gap-1.5">
+      <h1 id="coreTitle" class="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-sky-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
+        FROSTED GLASSMORPHISM
+      </h1>
+      <p id="coreDesc" class="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed">
+        Liquid glassmorphism with 40px backdrop blur, translucent optical edge refractions, and real-time color evolution.
+      </p>
+    </div>
+
+    <!-- Power Surge Progress HUD -->
+    <div id="bootTelemetry" class="w-full max-w-md flex flex-col gap-2 transition-all duration-300">
+      <div class="flex justify-between text-xs font-mono">
+        <span id="stageLabel" class="text-sky-400 font-bold">⚡ STAGE 1/4: CRYO CYAN BOOT</span>
+        <span id="progressPct" class="text-sky-300 font-extrabold">0%</span>
+      </div>
+      
+      <!-- Multi-Segment Circuit Power Bar -->
+      <div class="relative w-full h-3.5 rounded-full bg-slate-900/60 border border-white/[0.2] overflow-hidden p-0.5 shadow-inner">
+        <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-400 transition-all duration-75 shadow-[0_0_20px_#38bdf8]" style="width: 0%;"></div>
+      </div>
+      
+      <div id="stageStatusText" class="text-[11px] font-mono text-slate-300 truncate">
+        Click below or press SPACE to ignite power surge...
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="flex flex-col items-center gap-2.5 w-full max-w-md">
+      <button id="igniteBtn" class="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-sky-500 via-purple-600 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 shadow-[0_0_40px_rgba(56,189,248,0.5)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border border-white/[0.25]">
+        <span id="btnIcon" class="text-xl">⚡</span>
+        <span id="btnText" class="tracking-wide uppercase">START POWER SURGE (SPACE / ENTER)</span>
+      </button>
+
+      <span class="text-[11px] text-slate-400 font-mono">
+        🔊 REAL-TIME DYNAMIC CHROMATIC AUDIO ACTIVE
+      </span>
+    </div>
+
+    <!-- Glass Telemetry Badges Strip -->
+    <footer class="grid grid-cols-3 gap-2 w-full pt-2 border-t border-white/[0.1] text-center font-mono text-xs text-slate-300">
+      <div class="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+        <span class="text-[10px] text-slate-400 block uppercase">CAPACITANCE</span>
+        <span id="capValue" class="text-sky-400 font-bold transition-colors duration-300">12,000 µF</span>
+      </div>
+      <div class="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+        <span class="text-[10px] text-slate-400 block uppercase">BUS FREQUENCY</span>
+        <span id="freqValue" class="text-purple-400 font-bold transition-colors duration-300">60 Hz</span>
+      </div>
+      <div class="p-2 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+        <span class="text-[10px] text-slate-400 block uppercase">EMOTIONAL HARMONY</span>
+        <span id="stateValue" class="text-emerald-400 font-bold transition-colors duration-300">CALIBRATING</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ==================== PROCEDURAL AUDIO SYNTHESIZER ==================== -->
+  <script>
+    class CinematicPowerSurgeAudio {
+      constructor() {
+        this.ctx = null;
+        this.isMuted = false;
+        this.activeNodes = null;
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          return this.ctx.resume();
+        }
+        return Promise.resolve();
+      }
+
+      toggleMute() {
+        this.isMuted = !this.isMuted;
+        if (this.isMuted && this.activeNodes) {
+          this.stopContinuousSurge();
+        }
+        return this.isMuted;
+      }
+
+      playClick() {
+        if (this.isMuted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(1400, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } catch {}
+      }
+
+      startContinuousSurge(durationSec = 3.5) {
+        if (this.isMuted || !this.ctx) return;
+        this.stopContinuousSurge();
+
+        try {
+          const now = this.ctx.currentTime;
+          const endTime = now + durationSec;
+
+          const subOsc = this.ctx.createOscillator();
+          const subGain = this.ctx.createGain();
+          subOsc.type = "sine";
+          subOsc.frequency.setValueAtTime(50, now);
+          subOsc.frequency.linearRampToValueAtTime(85, endTime);
+          subGain.gain.setValueAtTime(0.22, now);
+          subGain.gain.linearRampToValueAtTime(0.38, endTime);
+          subOsc.connect(subGain);
+          subGain.connect(this.ctx.destination);
+          subOsc.start(now);
+          subOsc.stop(endTime);
+
+          const coil1 = this.ctx.createOscillator();
+          const coil2 = this.ctx.createOscillator();
+          const coilGain = this.ctx.createGain();
+          const coilFilter = this.ctx.createBiquadFilter();
+
+          coil1.type = "sawtooth";
+          coil2.type = "sawtooth";
+          coil1.frequency.setValueAtTime(70, now);
+          coil1.frequency.exponentialRampToValueAtTime(980, endTime);
+          coil2.frequency.setValueAtTime(73, now);
+          coil2.frequency.exponentialRampToValueAtTime(995, endTime);
+
+          coilFilter.type = "lowpass";
+          coilFilter.frequency.setValueAtTime(180, now);
+          coilFilter.frequency.exponentialRampToValueAtTime(4500, endTime);
+          coilFilter.Q.setValueAtTime(5.5, now);
+
+          coilGain.gain.setValueAtTime(0.02, now);
+          coilGain.gain.linearRampToValueAtTime(0.18, endTime);
+
+          coil1.connect(coilFilter);
+          coil2.connect(coilFilter);
+          coilFilter.connect(coilGain);
+          coilGain.connect(this.ctx.destination);
+
+          coil1.start(now);
+          coil2.start(now);
+          coil1.stop(endTime);
+          coil2.stop(endTime);
+
+          const bufferSize = this.ctx.sampleRate * 2;
+          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99 * b0 + white * 0.05;
+            b1 = 0.95 * b1 + white * 0.11;
+            b2 = 0.85 * b2 + white * 0.25;
+            output[i] = (b0 + b1 + b2) * 0.4;
+          }
+
+          const noiseSource = this.ctx.createBufferSource();
+          noiseSource.buffer = noiseBuffer;
+          noiseSource.loop = true;
+
+          const noiseFilter = this.ctx.createBiquadFilter();
+          noiseFilter.type = "bandpass";
+          noiseFilter.frequency.setValueAtTime(1200, now);
+          noiseFilter.frequency.exponentialRampToValueAtTime(3800, endTime);
+          noiseFilter.Q.setValueAtTime(6.0, now);
+
+          const tremolo = this.ctx.createOscillator();
+          tremolo.type = "square";
+          tremolo.frequency.setValueAtTime(16, now);
+          tremolo.frequency.linearRampToValueAtTime(48, endTime);
+
+          const noiseGain = this.ctx.createGain();
+          noiseGain.gain.setValueAtTime(0.01, now);
+          noiseGain.gain.linearRampToValueAtTime(0.09, endTime);
+
+          tremolo.connect(noiseGain.gain);
+          noiseSource.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(this.ctx.destination);
+
+          tremolo.start(now);
+          noiseSource.start(now);
+          tremolo.stop(endTime);
+          noiseSource.stop(endTime);
+
+          this.activeNodes = { subOsc, coil1, coil2, noiseSource, tremolo };
+        } catch {}
+      }
+
+      stopContinuousSurge() {
+        if (this.activeNodes) {
+          try {
+            Object.values(this.activeNodes).forEach(node => {
+              try { node.stop(); } catch {}
+              try { node.disconnect(); } catch {}
+            });
+          } catch {}
+          this.activeNodes = null;
+        }
+      }
+
+      playMilestone(stage) {
+        if (this.isMuted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const chords = {
+            1: [330, 440],
+            2: [440, 660, 880],
+            3: [554.37, 830.6, 1108.7],
+          };
+
+          const freqs = chords[stage] || [440, 880];
+          freqs.forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(f, now + idx * 0.02);
+            osc.frequency.exponentialRampToValueAtTime(f * 1.05, now + 0.35);
+
+            gain.gain.setValueAtTime(0.08, now + idx * 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + idx * 0.02);
+            osc.stop(now + 0.4);
+          });
+        } catch {}
+      }
+
+      playSupernovaCompletion() {
+        if (this.isMuted || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const boomOsc = this.ctx.createOscillator();
+          const boomGain = this.ctx.createGain();
+          boomOsc.type = "sine";
+          boomOsc.frequency.setValueAtTime(180, now);
+          boomOsc.frequency.exponentialRampToValueAtTime(28, now + 1.2);
+
+          boomGain.gain.setValueAtTime(0.4, now);
+          boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.3);
+
+          boomOsc.connect(boomGain);
+          boomGain.connect(this.ctx.destination);
+          boomOsc.start(now);
+          boomOsc.stop(now + 1.3);
+
+          const shimmerOsc = this.ctx.createOscillator();
+          const shimmerGain = this.ctx.createGain();
+          const shimmerFilter = this.ctx.createBiquadFilter();
+
+          shimmerOsc.type = "sawtooth";
+          shimmerOsc.frequency.setValueAtTime(1760, now);
+          shimmerOsc.frequency.exponentialRampToValueAtTime(4400, now + 0.5);
+
+          shimmerFilter.type = "bandpass";
+          shimmerFilter.frequency.setValueAtTime(2400, now);
+          shimmerFilter.Q.setValueAtTime(4.0, now);
+
+          shimmerGain.gain.setValueAtTime(0.18, now);
+          shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+          shimmerOsc.connect(shimmerFilter);
+          shimmerFilter.connect(shimmerGain);
+          shimmerGain.connect(this.ctx.destination);
+
+          shimmerOsc.start(now);
+          shimmerOsc.stop(now + 0.9);
+        } catch {}
+      }
+    }
+
+    const soundSynth = new CinematicPowerSurgeAudio();
+  </script>
+
+  <!-- ==================== DUAL-CANVAS POWER SURGE VISUAL ENGINE ==================== -->
+  <script>
+    const rainCanvas = document.getElementById("rainCanvas");
+    const circuitCanvas = document.getElementById("circuitCanvas");
+    const hybridOrbCanvas = document.getElementById("hybridOrbCanvas");
+    const hybridIrisSvg = document.getElementById("hybridIrisSvg");
+    const irisBlades = document.getElementById("irisBlades");
+
+    const mainCard = document.getElementById("mainCard");
+    const igniteBtn = document.getElementById("igniteBtn");
+    const soundToggleBtn = document.getElementById("soundToggleBtn");
+    const soundIcon = document.getElementById("soundIcon");
+    const soundLabel = document.getElementById("soundLabel");
+
+    const stageLabel = document.getElementById("stageLabel");
+    const progressPct = document.getElementById("progressPct");
+    const progressBar = document.getElementById("progressBar");
+    const stageStatusText = document.getElementById("stageStatusText");
+
+    const voltageMeter = document.getElementById("voltageMeter");
+    const capValue = document.getElementById("capValue");
+    const freqValue = document.getElementById("freqValue");
+    const stateValue = document.getElementById("stateValue");
+    const statusLed = document.getElementById("statusLed");
+    const outerStator = document.getElementById("outerStator");
+    const innerRotor = document.getElementById("innerRotor");
+    const spectrumStateTag = document.getElementById("spectrumStateTag");
+    const brandTag = document.getElementById("brandTag");
+
+    let isSurging = false;
+    let surgeProgress = 0;
+    let surgeInterval = null;
+
+    const CHROMATIC_STAGES = [
+      {
+        min: 0, max: 25,
+        name: "CRYO CYAN",
+        tag: "SPECTRUM: CRYO COLD",
+        primary: "#38bdf8", secondary: "#0284c7", glow: "rgba(56, 189, 248, 0.5)",
+        voltage: "120.0 V", freq: "60 Hz", state: "INITIALIZING",
+      },
+      {
+        min: 25, max: 50,
+        name: "NEURAL VIOLET",
+        tag: "SPECTRUM: NEURAL VIOLET",
+        primary: "#c084fc", secondary: "#f43f5e", glow: "rgba(192, 132, 252, 0.6)",
+        voltage: "1.21 kV", freq: "240 Hz", state: "TENSOR ALIGNED",
+      },
+      {
+        min: 50, max: 75,
+        name: "SOLAR AMBER",
+        tag: "SPECTRUM: SOLAR AMBER",
+        primary: "#fbbf24", secondary: "#f97316", glow: "rgba(251, 191, 36, 0.6)",
+        voltage: "4.80 kV", freq: "440 Hz", state: "AFFECTIVE HARMONY",
+      },
+      {
+        min: 75, max: 100,
+        name: "EMERALD SUPERNOVA",
+        tag: "SPECTRUM: EMERALD HARMONY",
+        primary: "#10b981", secondary: "#34d399", glow: "rgba(16, 185, 129, 0.7)",
+        voltage: "10.0 kV", freq: "880 Hz", state: "EMPATHIC COHERENCE",
+      }
+    ];
+
+    function getCurrentStageTheme(pct) {
+      if (pct < 25) return CHROMATIC_STAGES[0];
+      if (pct < 50) return CHROMATIC_STAGES[1];
+      if (pct < 75) return CHROMATIC_STAGES[2];
+      return CHROMATIC_STAGES[3];
+    }
+
+    function resizeCanvases() {
+      const dpr = window.devicePixelRatio || 1;
+      [rainCanvas, circuitCanvas].forEach(c => {
+        c.width = window.innerWidth * dpr;
+        c.height = window.innerHeight * dpr;
+      });
+
+      if (hybridOrbCanvas) {
+        hybridOrbCanvas.width = 96 * dpr;
+        hybridOrbCanvas.height = 96 * dpr;
+      }
+    }
+    window.addEventListener("resize", resizeCanvases);
+    resizeCanvases();
+
+    const rainCtx = rainCanvas.getContext("2d");
+    const CHARS = "0123456789ABCDEFΣΩΨΦ⚡Ξλ0101".split("");
+    const FONT_SIZE = 14;
+    let columns = Math.floor(window.innerWidth / FONT_SIZE);
+    let drops = Array(columns).fill(1).map(() => Math.random() * -80);
+
+    function drawMatrixRain() {
+      const dpr = window.devicePixelRatio || 1;
+      rainCtx.save();
+      rainCtx.scale(dpr, dpr);
+      
+      rainCtx.fillStyle = "rgba(3, 7, 18, 0.12)";
+      rainCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      rainCtx.font = `${FONT_SIZE}px 'JetBrains Mono', monospace`;
+      const theme = getCurrentStageTheme(surgeProgress);
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = CHARS[Math.floor(Math.random() * CHARS.length)];
+        const x = i * FONT_SIZE;
+        const y = drops[i] * FONT_SIZE;
+
+        const isAlt = i % 2 === 0;
+        rainCtx.fillStyle = isAlt ? theme.primary : theme.secondary;
+        rainCtx.shadowColor = theme.primary;
+        rainCtx.shadowBlur = isSurging ? 12 : 4;
+
+        rainCtx.fillText(char, x, y);
+
+        const speed = isSurging ? 1.8 : 0.8;
+        if (y > window.innerHeight && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i] += speed;
+      }
+      rainCtx.restore();
+    }
+
+    const circuitCtx = circuitCanvas.getContext("2d");
+    const NUM_TRACES = 22;
+    const pcbTraces = Array.from({ length: NUM_TRACES }, (_, i) => {
+      const baseAngle = (i / NUM_TRACES) * Math.PI * 2;
+      const r1 = 130 + Math.random() * 60;
+      const r2 = r1 + 90 + Math.random() * 110;
+      const r3 = r2 + 120 + Math.random() * 180;
+      const turnAngle = baseAngle + (i % 2 === 0 ? Math.PI / 4 : -Math.PI / 4);
+
+      return {
+        baseAngle,
+        r1, r2, r3,
+        turnAngle,
+        pulseOffset: Math.random() * 100,
+        pulseSpeed: 1.8 + Math.random() * 2.2,
+      };
+    });
+
+    const shockwaves = [];
+
+    function triggerShockwave(color = "#38bdf8") {
+      shockwaves.push({
+        radius: 80,
+        maxRadius: Math.max(window.innerWidth, window.innerHeight) * 0.9,
+        alpha: 1.0,
+        color: color,
+        speed: isSurging ? 16 : 6,
+      });
+    }
+
+    function drawCircuitPowerSurge(timestamp) {
+      const dpr = window.devicePixelRatio || 1;
+      circuitCtx.save();
+      circuitCtx.scale(dpr, dpr);
+
+      circuitCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const time = timestamp * 0.003;
+      const theme = getCurrentStageTheme(surgeProgress);
+
+      pcbTraces.forEach((trace, idx) => {
+        const x0 = cx + Math.cos(trace.baseAngle) * 90;
+        const y0 = cy + Math.sin(trace.baseAngle) * 90;
+
+        const x1 = cx + Math.cos(trace.baseAngle) * trace.r1;
+        const y1 = cy + Math.sin(trace.baseAngle) * trace.r1;
+
+        const x2 = x1 + Math.cos(trace.turnAngle) * (trace.r2 - trace.r1);
+        const y2 = y1 + Math.sin(trace.turnAngle) * (trace.r2 - trace.r1);
+
+        const x3 = x2 + Math.cos(trace.baseAngle) * (trace.r3 - trace.r2);
+        const y3 = y2 + Math.sin(trace.baseAngle) * (trace.r3 - trace.r2);
+
+        circuitCtx.beginPath();
+        circuitCtx.moveTo(x0, y0);
+        circuitCtx.lineTo(x1, y1);
+        circuitCtx.lineTo(x2, y2);
+        circuitCtx.lineTo(x3, y3);
+        circuitCtx.strokeStyle = isSurging ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.09)";
+        circuitCtx.lineWidth = isSurging ? 2.5 : 1.5;
+        circuitCtx.stroke();
+
+        const surgeMultiplier = isSurging ? 4.5 : 1.0;
+        const progress = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset) % 100) / 100;
+        
+        let px, py;
+        if (progress < 0.33) {
+          const t = progress / 0.33;
+          px = x0 + (x1 - x0) * t;
+          py = y0 + (y1 - y0) * t;
+        } else if (progress < 0.66) {
+          const t = (progress - 0.33) / 0.33;
+          px = x1 + (x2 - x1) * t;
+          py = y1 + (y2 - y1) * t;
+        } else {
+          const t = (progress - 0.66) / 0.34;
+          px = x2 + (x3 - x2) * t;
+          py = y2 + (y3 - y2) * t;
+        }
+
+        const traceColor = idx % 2 === 0 ? theme.primary : theme.secondary;
+
+        circuitCtx.beginPath();
+        circuitCtx.arc(px, py, isSurging ? 6 : 3.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = traceColor;
+        circuitCtx.shadowColor = traceColor;
+        circuitCtx.shadowBlur = isSurging ? 25 : 8;
+        circuitCtx.fill();
+
+        circuitCtx.beginPath();
+        circuitCtx.arc(x3, y3, isSurging ? 5 : 3.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = isSurging ? traceColor : "rgba(255, 255, 255, 0.4)";
+        circuitCtx.strokeStyle = traceColor;
+        circuitCtx.lineWidth = 1.5;
+        circuitCtx.fill();
+        circuitCtx.stroke();
+      });
+
+      if (isSurging) {
+        circuitCtx.strokeStyle = Math.random() > 0.5 ? theme.primary : theme.secondary;
+        circuitCtx.lineWidth = 2 + Math.random() * 2.5;
+        circuitCtx.shadowColor = "#ffffff";
+        circuitCtx.shadowBlur = 20;
+
+        for (let a = 0; a < 3; a++) {
+          const startAngle = Math.random() * Math.PI * 2;
+          let currentR = 90;
+          let currentX = cx + Math.cos(startAngle) * currentR;
+          let currentY = cy + Math.sin(startAngle) * currentR;
+
+          circuitCtx.beginPath();
+          circuitCtx.moveTo(currentX, currentY);
+
+          for (let seg = 0; seg < 4; seg++) {
+            currentR += 45 + Math.random() * 35;
+            const segAngle = startAngle + (Math.random() - 0.5) * 0.7;
+            currentX = cx + Math.cos(segAngle) * currentR;
+            currentY = cy + Math.sin(segAngle) * currentR;
+            circuitCtx.lineTo(currentX, currentY);
+          }
+          circuitCtx.stroke();
+        }
+      }
+
+      for (let s = shockwaves.length - 1; s >= 0; s--) {
+        const sw = shockwaves[s];
+        sw.radius += sw.speed;
+        sw.alpha = 1.0 - (sw.radius / sw.maxRadius);
+
+        if (sw.alpha <= 0) {
+          shockwaves.splice(s, 1);
+          continue;
+        }
+
+        circuitCtx.beginPath();
+        circuitCtx.arc(cx, cy, sw.radius, 0, Math.PI * 2);
+        circuitCtx.strokeStyle = sw.color;
+        circuitCtx.lineWidth = 3.5 * sw.alpha;
+        circuitCtx.globalAlpha = sw.alpha;
+        circuitCtx.shadowColor = sw.color;
+        circuitCtx.shadowBlur = 30 * sw.alpha;
+        circuitCtx.stroke();
+        circuitCtx.globalAlpha = 1.0;
+      }
+
+      circuitCtx.restore();
+    }
+
+    function drawHybridEmotionOrb(timestamp) {
+      if (!hybridOrbCanvas) return;
+      const ctx = hybridOrbCanvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, 96, 96);
+
+      const cx = 48;
+      const cy = 48;
+      const t = timestamp * 0.003;
+      const numPoints = 8;
+      const baseRadius = isSurging ? 28 : 22;
+      const deformation = isSurging ? 10 : 5;
+      const theme = getCurrentStageTheme(surgeProgress);
+
+      ctx.beginPath();
+      for (let i = 0; i <= numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        const wave = Math.sin(angle * 3 + t * (isSurging ? 7 : 2.5)) * deformation;
+        const r = baseRadius + wave;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      const grad = ctx.createRadialGradient(cx, cy, 3, cx, cy, 42);
+      grad.addColorStop(0, "#ffffff");
+      grad.addColorStop(0.35, theme.primary);
+      grad.addColorStop(0.8, theme.secondary);
+      grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+      ctx.fillStyle = grad;
+      ctx.shadowColor = theme.primary;
+      ctx.shadowBlur = isSurging ? 28 : 14;
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function render(timestamp) {
+      drawMatrixRain();
+      drawCircuitPowerSurge(timestamp);
+      drawHybridEmotionOrb(timestamp);
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    const STAGE_EVENTS = [
+      { pct: 25, stage: 1, text: "⚡ STAGE 1/4: CRYO CYAN BOOT", status: "Magnetic coil stator charging (120V ➔ 480V)..." },
+      { pct: 50, stage: 2, text: "🧠 STAGE 2/4: NEURAL VIOLET ALIGNMENT", status: "High-voltage tensor spark surge engaged on 22 PCB tracks..." },
+      { pct: 75, stage: 3, text: "🧭 STAGE 3/4: SOLAR AMBER RESONANCE", status: "Circumplex affective vector plane synchronized..." },
+      { pct: 100, stage: 4, text: "🔮 STAGE 4/4: EMERALD HARMONY SUPERNOVA", status: "Supercharged! Neural Mirror Core 100% Operational." },
+    ];
+
+    async function startPowerSurge() {
+      if (isSurging) return;
+      
+      await soundSynth.ensureContext();
+      soundSynth.playClick();
+
+      isSurging = true;
+      surgeProgress = 0;
+      let lastTriggeredStage = 0;
+
+      const TOTAL_DURATION_SEC = 3.5;
+      soundSynth.startContinuousSurge(TOTAL_DURATION_SEC);
+
+      igniteBtn.disabled = true;
+      igniteBtn.classList.add("opacity-70", "cursor-not-allowed");
+      document.getElementById("btnText").innerText = "POWER SURGE ACTIVE...";
+      
+      outerStator.classList.remove("spin-slow");
+      outerStator.classList.add("spin-fast");
+      innerRotor.classList.remove("spin-reverse");
+      innerRotor.classList.add("spin-fast");
+      mainCard.classList.add("shake-subtle");
+
+      triggerShockwave("#38bdf8");
+
+      surgeInterval = setInterval(() => {
+        surgeProgress += 1;
+        if (surgeProgress > 100) surgeProgress = 100;
+
+        progressBar.style.width = `${surgeProgress}%`;
+        progressPct.innerText = `${surgeProgress}%`;
+
+        const currentTheme = getCurrentStageTheme(surgeProgress);
+
+        document.getElementById("grad1Stop1").setAttribute("stop-color", currentTheme.primary);
+        document.getElementById("grad1Stop2").setAttribute("stop-color", currentTheme.secondary);
+        document.getElementById("grad2Stop1").setAttribute("stop-color", currentTheme.secondary);
+        document.getElementById("grad2Stop2").setAttribute("stop-color", currentTheme.primary);
+
+        document.getElementById("blade1").setAttribute("stroke", currentTheme.primary);
+        document.getElementById("blade2").setAttribute("stroke", currentTheme.secondary);
+
+        document.getElementById("statorCircle1").setAttribute("stroke", currentTheme.primary);
+        document.getElementById("statorCircle2").setAttribute("stroke", currentTheme.secondary);
+
+        statusLed.style.backgroundColor = currentTheme.primary;
+        statusLed.className = "w-2.5 h-2.5 rounded-full animate-ping";
+        spectrumStateTag.innerText = currentTheme.tag;
+        spectrumStateTag.style.color = currentTheme.primary;
+        brandTag.style.color = currentTheme.primary;
+
+        if (irisBlades) {
+          const scale = 1.0 + (surgeProgress / 100) * 0.22;
+          const rotate = (surgeProgress / 100) * 45;
+          irisBlades.style.transform = `scale(${scale}) rotate(${rotate}deg)`;
+        }
+
+        if (surgeProgress >= 60 && !mainCard.classList.contains("shake-intense")) {
+          mainCard.classList.remove("shake-subtle");
+          mainCard.classList.add("shake-intense");
+        }
+
+        const stageObj = STAGE_EVENTS.find(s => s.pct === surgeProgress);
+        if (stageObj && stageObj.stage > lastTriggeredStage) {
+          lastTriggeredStage = stageObj.stage;
+
+          if (stageObj.stage < 4) {
+            soundSynth.playMilestone(stageObj.stage);
+          }
+
+          stageLabel.innerText = stageObj.text;
+          stageLabel.style.color = currentTheme.primary;
+          stageStatusText.innerText = stageObj.status;
+          voltageMeter.innerText = `${currentTheme.voltage} // ${currentTheme.state}`;
+          voltageMeter.style.color = currentTheme.primary;
+
+          capValue.innerText = `${(12000 * (stageObj.stage / 4)).toLocaleString()} µF`;
+          capValue.style.color = currentTheme.primary;
+          freqValue.innerText = currentTheme.freq;
+          freqValue.style.color = currentTheme.secondary;
+          stateValue.innerText = currentTheme.state;
+          stateValue.style.color = currentTheme.primary;
+
+          triggerShockwave(currentTheme.primary);
+        }
+
+        if (surgeProgress >= 100) {
+          clearInterval(surgeInterval);
+          mainCard.classList.remove("shake-subtle", "shake-intense");
+          
+          soundSynth.stopContinuousSurge();
+          soundSynth.playSupernovaCompletion();
+          triggerShockwave("#10b981");
+
+          setTimeout(() => {
+            document.getElementById("btnText").innerText = "⚡ RE-IGNITE POWER SURGE";
+            igniteBtn.disabled = false;
+            igniteBtn.classList.remove("opacity-70", "cursor-not-allowed");
+            statusLed.className = "w-2.5 h-2.5 rounded-full";
+            statusLed.style.backgroundColor = "#10b981";
+            outerStator.classList.remove("spin-fast");
+            outerStator.classList.add("spin-slow");
+            innerRotor.classList.remove("spin-fast");
+            innerRotor.classList.add("spin-reverse");
+            if (irisBlades) irisBlades.style.transform = "scale(1) rotate(0deg)";
+            isSurging = false;
+          }, 1500);
+        }
+      }, 35);
+    }
+
+    igniteBtn.addEventListener("click", startPowerSurge);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        startPowerSurge();
+      }
+    });
+
+    soundToggleBtn.addEventListener("click", async () => {
+      await soundSynth.ensureContext();
+      const muted = soundSynth.toggleMute();
+      if (muted) {
+        soundIcon.innerText = "🔇";
+        soundLabel.innerText = "AUDIO: OFF";
+        soundToggleBtn.classList.replace("text-slate-200", "text-rose-400");
+      } else {
+        soundIcon.innerText = "🔊";
+        soundLabel.innerText = "AUDIO: ON";
+        soundToggleBtn.classList.replace("text-rose-400", "text-slate-200");
+        soundSynth.playClick();
+      }
+    });
+  </script>
+</body>
+</html>
