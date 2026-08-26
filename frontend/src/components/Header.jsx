@@ -1,5 +1,6 @@
 import React from "react";
-import { Sparkles, Volume2, VolumeX, BarChart3, Activity, Cpu, Pause } from "lucide-react";
+import { Volume2, VolumeX, BarChart3, Activity, Cpu, Pause } from "lucide-react";
+import { ReflectraLogo } from "./ReflectraLogo";
 
 export function Header({
   isConnected,
@@ -13,9 +14,7 @@ export function Header({
     <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-3.5 bg-slate-900/85 backdrop-blur-xl border-b border-white/[0.12]">
       {/* Brand & Project Info */}
       <div className="flex items-center gap-3.5">
-        <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 via-purple-500 to-sky-400 shadow-[0_0_20px_rgba(244,63,94,0.4)]">
-          <Sparkles className="w-5 h-5 text-white" />
-        </div>
+        <ReflectraLogo className="w-10 h-10" />
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
