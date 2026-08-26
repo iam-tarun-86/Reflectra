@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REFLECTRA — Clean Spatial Holographic HUD (Zero Clutter)</title>
+  <title>REFLECTRA — Pure Spatial Hologram (Clean PCB Circuit)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
@@ -33,7 +33,7 @@
   <!-- === LAYER 0: Background Matrix Digital Rain === -->
   <canvas id="rainCanvas" class="absolute inset-0 w-full h-full opacity-25 pointer-events-none" style="z-index: 0;"></canvas>
 
-  <!-- === LAYER 1: Power Surge PCB Circuit Canvas (Clean Traces + Electron Pulses + Shockwaves) === -->
+  <!-- === LAYER 1: Power Surge PCB Circuit Canvas (Pure PCB Copper Traces & Electron Pulses) === -->
   <canvas id="circuitCanvas" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
 
   <!-- Scanline CRT Texture Overlay -->
@@ -43,7 +43,7 @@
   <div id="bloom1" class="absolute w-[700px] h-[700px] rounded-full bg-sky-600/25 blur-[180px] pointer-events-none -top-24 -left-24 transition-colors duration-500" style="z-index: 0;"></div>
   <div id="bloom2" class="absolute w-[700px] h-[700px] rounded-full bg-blue-600/20 blur-[180px] pointer-events-none -bottom-24 -right-24 transition-colors duration-500" style="z-index: 0;"></div>
 
-  <!-- === FLOATING SPATIAL HUD (CLEAN / ZERO JAGGED THUNDER / ZERO BOX) === -->
+  <!-- === FLOATING SPATIAL HUD (PURE CLEAN PCB / ZERO RIPPLES / ZERO BOX) === -->
   <main id="mainCard" class="relative z-10 w-full max-w-2xl flex flex-col items-center text-center gap-6 transition-all duration-300">
 
     <!-- Top Floating Header Bar -->
@@ -131,7 +131,7 @@
         SPATIAL HOLOGRAPHIC HUD
       </h1>
       <p id="coreDesc" class="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed drop-shadow-md">
-        Clean holographic power surge. Concentric magnetic shockwaves and PCB circuit pulses radiate smoothly across the viewport.
+        Clean holographic power surge. PCB circuit pulses radiate smoothly across the viewport with chromatic color evolution.
       </p>
     </div>
 
@@ -409,7 +409,7 @@
     const soundSynth = new CinematicPowerSurgeAudio();
   </script>
 
-  <!-- ==================== DUAL-CANVAS CLEAN POWER SURGE ENGINE ==================== -->
+  <!-- ==================== DUAL-CANVAS CLEAN PCB CIRCUIT ENGINE ==================== -->
   <script>
     const rainCanvas = document.getElementById("rainCanvas");
     const circuitCanvas = document.getElementById("circuitCanvas");
@@ -534,7 +534,7 @@
       rainCtx.restore();
     }
 
-    // --- LAYER 1: CLEAN PCB CIRCUIT TRACES (NO JAGGED THUNDER) ---
+    // --- LAYER 1: PURE CLEAN PCB CIRCUIT TRACES (NO RIPPLES / NO THUNDER) ---
     const circuitCtx = circuitCanvas.getContext("2d");
     const NUM_TRACES = 22;
     const pcbTraces = Array.from({ length: NUM_TRACES }, (_, i) => {
@@ -553,18 +553,6 @@
       };
     });
 
-    const shockwaves = [];
-
-    function triggerShockwave(color = "#38bdf8") {
-      shockwaves.push({
-        radius: 80,
-        maxRadius: Math.max(window.innerWidth, window.innerHeight) * 0.9,
-        alpha: 1.0,
-        color: color,
-        speed: isSurging ? 16 : 6,
-      });
-    }
-
     function drawCircuitPowerSurge(timestamp) {
       const dpr = window.devicePixelRatio || 1;
       circuitCtx.save();
@@ -577,7 +565,7 @@
       const time = timestamp * 0.003;
       const theme = getCurrentStageTheme(surgeProgress);
 
-      // Draw clean, smooth copper circuit traces
+      // Clean copper circuit traces with glowing electron packets
       pcbTraces.forEach((trace, idx) => {
         const x0 = cx + Math.cos(trace.baseAngle) * 90;
         const y0 = cy + Math.sin(trace.baseAngle) * 90;
@@ -637,28 +625,6 @@
         circuitCtx.fill();
         circuitCtx.stroke();
       });
-
-      // Concentric expanding shockwaves
-      for (let s = shockwaves.length - 1; s >= 0; s--) {
-        const sw = shockwaves[s];
-        sw.radius += sw.speed;
-        sw.alpha = 1.0 - (sw.radius / sw.maxRadius);
-
-        if (sw.alpha <= 0) {
-          shockwaves.splice(s, 1);
-          continue;
-        }
-
-        circuitCtx.beginPath();
-        circuitCtx.arc(cx, cy, sw.radius, 0, Math.PI * 2);
-        circuitCtx.strokeStyle = sw.color;
-        circuitCtx.lineWidth = 3.5 * sw.alpha;
-        circuitCtx.globalAlpha = sw.alpha;
-        circuitCtx.shadowColor = sw.color;
-        circuitCtx.shadowBlur = 30 * sw.alpha;
-        circuitCtx.stroke();
-        circuitCtx.globalAlpha = 1.0;
-      }
 
       circuitCtx.restore();
     }
@@ -745,8 +711,6 @@
       innerRotor.classList.remove("spin-reverse");
       innerRotor.classList.add("spin-fast");
 
-      triggerShockwave("#38bdf8");
-
       surgeInterval = setInterval(() => {
         surgeProgress += 1;
         if (surgeProgress > 100) surgeProgress = 100;
@@ -812,8 +776,6 @@
           if (stageObj.stage < 4) {
             soundSynth.playMilestone(stageObj.stage);
           }
-
-          triggerShockwave(currentTheme.primary);
         }
 
         if (surgeProgress >= 100) {
@@ -821,7 +783,6 @@
           
           soundSynth.stopContinuousSurge();
           soundSynth.playSupernovaCompletion();
-          triggerShockwave("#10b981");
 
           setTimeout(() => {
             document.getElementById("btnText").innerText = "⚡ RE-IGNITE POWER SURGE";
