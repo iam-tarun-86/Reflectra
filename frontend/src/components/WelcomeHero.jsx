@@ -1,37 +1,115 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Brain, Eye, Compass, Volume2, Zap, ArrowRight, Cpu } from "lucide-react";
+import PropTypes from "prop-types";
+import { Zap, Volume2, VolumeX, Cpu, Brain, Eye, Compass, Activity } from "lucide-react";
 import { soundFX } from "../utils/audioFX";
 
-const BOOT_STAGES = [
-  { pct: 25, stage: 1, text: "⚡ Initializing Neural Tensor Bus & DeepFace Vision Engine..." },
-  { pct: 50, stage: 2, text: "🧠 Loading Rolling-Window Emotional State & Context Memory..." },
-  { pct: 75, stage: 3, text: "🧭 Calibrating 2D Russell Circumplex Vector Field..." },
-  { pct: 100, stage: 4, text: "🔮 Synchronizing Empathic Response Orb & Speech Synthesis..." },
+const CHROMATIC_STAGES = [
+  {
+    min: 0,
+    max: 25,
+    stage: 1,
+    name: "CRYO CYAN",
+    tag: "SPECTRUM: CRYO COLD",
+    primary: "#38bdf8",
+    secondary: "#0284c7",
+    glow: "rgba(56, 189, 248, 0.45)",
+    voltage: "120.0 V",
+    freq: "60 Hz",
+    state: "INITIALIZING",
+    status: "Magnetic coil stator charging (120V ➔ 480V)...",
+  },
+  {
+    min: 25,
+    max: 50,
+    stage: 2,
+    name: "NEURAL VIOLET",
+    tag: "SPECTRUM: NEURAL VIOLET",
+    primary: "#c084fc",
+    secondary: "#f43f5e",
+    glow: "rgba(192, 132, 252, 0.55)",
+    voltage: "1.21 kV",
+    freq: "240 Hz",
+    state: "TENSOR ALIGNED",
+    status: "Subtle background bus engaged across 16 tracks...",
+  },
+  {
+    min: 50,
+    max: 75,
+    stage: 3,
+    name: "SOLAR AMBER",
+    tag: "SPECTRUM: SOLAR AMBER",
+    primary: "#fbbf24",
+    secondary: "#f97316",
+    glow: "rgba(251, 191, 36, 0.55)",
+    voltage: "4.80 kV",
+    freq: "440 Hz",
+    state: "AFFECTIVE HARMONY",
+    status: "Circumplex affective vector plane synchronized...",
+  },
+  {
+    min: 75,
+    max: 100,
+    stage: 4,
+    name: "EMERALD SUPERNOVA",
+    tag: "SPECTRUM: EMERALD HARMONY",
+    primary: "#10b981",
+    secondary: "#34d399",
+    glow: "rgba(16, 185, 129, 0.65)",
+    voltage: "10.0 kV",
+    freq: "880 Hz",
+    state: "EMPATHIC COHERENCE",
+    status: "Supercharged! Neural Mirror Core 100% Operational.",
+  },
 ];
+
+function getCurrentStageTheme(pct) {
+  if (pct < 25) return CHROMATIC_STAGES[0];
+  if (pct < 50) return CHROMATIC_STAGES[1];
+  if (pct < 75) return CHROMATIC_STAGES[2];
+  return CHROMATIC_STAGES[3];
+}
 
 export function WelcomeHero({ onStart }) {
   const [isBooting, setIsBooting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentStatus, setCurrentStatus] = useState("System in standby. Awaiting engagement...");
+  const [isMuted, setIsMuted] = useState(false);
 
   const rainCanvasRef = useRef(null);
-  const surgeCanvasRef = useRef(null);
+  const circuitCanvasRef = useRef(null);
+  const hybridOrbCanvasRef = useRef(null);
+  const irisBladesRef = useRef(null);
   const animFrameIdRef = useRef(null);
   const isBootingRef = useRef(false);
+  const progressRef = useRef(0);
 
-  // Keep isBootingRef in sync for animation loop speed modulation
+  // Keep refs in sync for the high-frequency canvas render loop
   useEffect(() => {
     isBootingRef.current = isBooting;
-  }, [isBooting]);
+    progressRef.current = progress;
+  }, [isBooting, progress]);
 
+  // Audio mute toggle
+  const toggleAudio = useCallback(() => {
+    soundFX.ensureContext();
+    const muted = soundFX.toggleMute();
+    setIsMuted(muted);
+    if (!muted) {
+      soundFX.playClick();
+    }
+  }, []);
+
+  // Trigger boot sequence with continuous audio charge
   const triggerBoot = useCallback(() => {
     if (isBooting) return;
+    soundFX.ensureContext();
     soundFX.playClick();
-    soundFX.playPowerUp(1);
     setIsBooting(true);
+
+    const TOTAL_SURGE_SEC = 2.8;
+    soundFX.startContinuousSurge(TOTAL_SURGE_SEC);
   }, [isBooting]);
 
-  // Keyboard navigation (Space or Enter)
+  // Keyboard engagement (Space / Enter)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === " " || e.key === "Enter") {
@@ -43,302 +121,271 @@ export function WelcomeHero({ onStart }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [triggerBoot]);
 
-  // Boot sequence timer & stage progression
+  // Power Surge Timer & Milestone Coordination
   useEffect(() => {
     if (!isBooting) return;
 
     let currentPct = 0;
+    let lastMilestone = 0;
+
     const interval = setInterval(() => {
-      currentPct += 2;
+      currentPct += 1;
       if (currentPct > 100) currentPct = 100;
       setProgress(currentPct);
 
-      const stageObj = BOOT_STAGES.find((s) => s.pct === currentPct);
-      if (stageObj) {
-        soundFX.playPowerUp(stageObj.stage);
-        setCurrentStatus(stageObj.text);
+      // Trigger chord milestones at 25%, 50%, 75%
+      const stageIdx = Math.floor(currentPct / 25);
+      if (stageIdx > lastMilestone && stageIdx <= 3) {
+        lastMilestone = stageIdx;
+        soundFX.playMilestone(stageIdx);
       }
 
       if (currentPct >= 100) {
         clearInterval(interval);
+        soundFX.stopContinuousSurge();
+        soundFX.playSupernovaCompletion();
+
         setTimeout(() => {
-          soundFX.playScanLock();
           onStart();
-        }, 500);
+        }, 800);
       }
-    }, 45); // ~2.3 seconds total sequence
+    }, 28); // ~2.8 seconds total smooth power surge
 
     return () => clearInterval(interval);
   }, [isBooting, onStart]);
 
-  // Dual Canvas Animation: Red & Blue Matrix Rain + Circuital Power Surge
+  // Dual Canvas Rendering Engine: Background Matrix Rain + Subtle Background PCB Circuit Network
   useEffect(() => {
     const rainCanvas = rainCanvasRef.current;
-    const surgeCanvas = surgeCanvasRef.current;
-    if (!rainCanvas || !surgeCanvas) return;
+    const circuitCanvas = circuitCanvasRef.current;
+    if (!rainCanvas || !circuitCanvas) return;
 
     const rainCtx = rainCanvas.getContext("2d");
-    const surgeCtx = surgeCanvas.getContext("2d");
+    const circuitCtx = circuitCanvas.getContext("2d");
 
-    let width = (rainCanvas.width = surgeCanvas.width = window.innerWidth);
-    let height = (rainCanvas.height = surgeCanvas.height = window.innerHeight);
+    let width = (rainCanvas.width = circuitCanvas.width = window.innerWidth);
+    let height = (rainCanvas.height = circuitCanvas.height = window.innerHeight);
 
-    let cx = width / 2;
-    let cy = height / 2;
-    let maxRadius = Math.sqrt(cx * cx + cy * cy);
+    // 1. Matrix Digital Rain Setup
+    const chars = "0123456789ABCDEFΣΩΨΦ⚡Ξλ0101".split("");
+    const fontSize = 14;
+    let cols = Math.floor(width / fontSize);
+    let drops = Array(cols)
+      .fill(1)
+      .map(() => Math.random() * -80);
+
+    // 2. Clean 16-Bus Background PCB Motherboard Network
+    const NUM_TRACES = 16;
+    let pcbTraces = [];
+
+    const buildPcbNetwork = () => {
+      const maxDiag = Math.hypot(width, height) * 0.65;
+      pcbTraces = Array.from({ length: NUM_TRACES }, (_, i) => {
+        const baseAngle = (i / NUM_TRACES) * Math.PI * 2 + Math.PI / 16;
+        const rStart = 110;
+        const r1 = rStart + 60 + (i % 3) * 40;
+        const r2 = r1 + 120 + (i % 2) * 60;
+        const r3 = maxDiag * 1.15;
+
+        const bendDir = i % 2 === 0 ? 1 : -1;
+        const turnAngle = baseAngle + (Math.PI / 6) * bendDir;
+
+        return {
+          baseAngle,
+          rStart,
+          r1,
+          r2,
+          r3,
+          turnAngle,
+          pulseOffset: (i * 25) % 100,
+          pulseSpeed: 1.2 + (i % 3) * 0.4,
+        };
+      });
+    };
 
     const handleResize = () => {
-      width = rainCanvas.width = surgeCanvas.width = window.innerWidth;
-      height = rainCanvas.height = surgeCanvas.height = window.innerHeight;
-      cx = width / 2;
-      cy = height / 2;
-      maxRadius = Math.sqrt(cx * cx + cy * cy);
+      width = rainCanvas.width = circuitCanvas.width = window.innerWidth;
+      height = rainCanvas.height = circuitCanvas.height = window.innerHeight;
+      cols = Math.floor(width / fontSize);
+      drops = Array(cols)
+        .fill(1)
+        .map(() => Math.random() * -80);
+      buildPcbNetwork();
     };
+
     window.addEventListener("resize", handleResize);
+    buildPcbNetwork();
 
-    // 1. Dual Matrix Rain Setup
-    const chars = "0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈ";
-    const fontSize = 14;
-    const cols = Math.floor(width / fontSize);
-    const drops = Array(cols).fill(1);
+    const getPcbPoint = (cx, cy, trace, prog) => {
+      const x0 = cx + Math.cos(trace.baseAngle) * trace.rStart;
+      const y0 = cy + Math.sin(trace.baseAngle) * trace.rStart;
 
-    // 2. Power Surge Rings
-    class SurgeRing {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.r = 0;
-        this.speed = 1.2 + Math.random() * 2.5;
-        this.lineWidth = 1 + Math.random() * 2;
-        this.isRed = Math.random() > 0.5;
-        this.opacity = 0.35 + Math.random() * 0.35;
-        this.dashLen = 8 + Math.random() * 30;
-        this.gapLen = 4 + Math.random() * 20;
-      }
-      update(speedMultiplier) {
-        this.r += this.speed * speedMultiplier;
-        if (this.r > maxRadius + 50) this.reset();
-      }
-      draw(ctx) {
-        const fade = 1 - this.r / maxRadius;
-        if (fade <= 0) return;
-        const color = this.isRed
-          ? `rgba(244, 63, 94, ${this.opacity * fade})`
-          : `rgba(56, 189, 248, ${this.opacity * fade})`;
-        ctx.beginPath();
-        ctx.arc(cx, cy, this.r, 0, Math.PI * 2);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = this.lineWidth * fade;
-        ctx.setLineDash([this.dashLen, this.gapLen]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-    }
+      const x1 = cx + Math.cos(trace.baseAngle) * trace.r1;
+      const y1 = cy + Math.sin(trace.baseAngle) * trace.r1;
 
-    // 3. Electric Lightning Arcs
-    class ElectricArc {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.angle = Math.random() * Math.PI * 2;
-        this.length = 80 + Math.random() * (maxRadius * 0.75);
-        this.life = 0;
-        this.maxLife = 12 + Math.random() * 18;
-        this.isRed = Math.random() > 0.5;
-        this.segments = [];
-        this.generate();
-      }
-      generate() {
-        this.segments = [];
-        const steps = 12 + Math.floor(Math.random() * 20);
-        let px = cx,
-          py = cy;
-        for (let i = 0; i < steps; i++) {
-          const frac = (i + 1) / steps;
-          const nx = cx + Math.cos(this.angle) * this.length * frac + (Math.random() - 0.5) * 40;
-          const ny = cy + Math.sin(this.angle) * this.length * frac + (Math.random() - 0.5) * 40;
-          this.segments.push({ x1: px, y1: py, x2: nx, y2: ny });
-          px = nx;
-          py = ny;
-          if (Math.random() > 0.7) {
-            const ba = this.angle + (Math.random() - 0.5) * 1.2;
-            const bl = 20 + Math.random() * 60;
-            const bx = nx + Math.cos(ba) * bl;
-            const by = ny + Math.sin(ba) * bl;
-            this.segments.push({ x1: nx, y1: ny, x2: bx, y2: by, branch: true });
-          }
-        }
-      }
-      update(speedMultiplier) {
-        this.life += 1 * speedMultiplier;
-        if (this.life > this.maxLife) this.reset();
-      }
-      draw(ctx) {
-        const fade = 1 - this.life / this.maxLife;
-        if (fade <= 0) return;
-        const base = this.isRed ? [244, 63, 94] : [56, 189, 248];
-        ctx.lineWidth = 1.5;
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = `rgba(${base[0]},${base[1]},${base[2]},0.6)`;
-        for (const seg of this.segments) {
-          const alpha = seg.branch ? fade * 0.4 : fade * 0.8;
-          ctx.strokeStyle = `rgba(${base[0]},${base[1]},${base[2]},${alpha})`;
-          ctx.lineWidth = seg.branch ? 0.8 : 1.5;
-          ctx.beginPath();
-          ctx.moveTo(seg.x1, seg.y1);
-          ctx.lineTo(seg.x2, seg.y2);
-          ctx.stroke();
-        }
-        ctx.shadowBlur = 0;
-      }
-    }
+      const x2 = x1 + Math.cos(trace.turnAngle) * (trace.r2 - trace.r1);
+      const y2 = y1 + Math.sin(trace.turnAngle) * (trace.r2 - trace.r1);
 
-    // 4. PCB Circuit Traces
-    class CircuitTrace {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.progress = 0;
-        this.speed = 2 + Math.random() * 4;
-        this.isRed = Math.random() > 0.5;
-        this.opacity = 0.15 + Math.random() * 0.25;
-        this.points = [];
-        let px = cx,
-          py = cy;
-        const totalSegs = 4 + Math.floor(Math.random() * 6);
-        let d = Math.floor(Math.random() * 4); // 0=R, 1=D, 2=L, 3=U
-        for (let i = 0; i < totalSegs; i++) {
-          const segLen = 30 + Math.random() * 120;
-          let nx = px,
-            ny = py;
-          if (d === 0) nx += segLen;
-          else if (d === 1) ny += segLen;
-          else if (d === 2) nx -= segLen;
-          else ny -= segLen;
-          this.points.push({ x1: px, y1: py, x2: nx, y2: ny });
-          px = nx;
-          py = ny;
-          d = (d + (Math.random() > 0.5 ? 1 : 3)) % 4;
-        }
-        this.totalLen = this.points.reduce(
-          (s, p) => s + Math.sqrt((p.x2 - p.x1) ** 2 + (p.y2 - p.y1) ** 2),
-          0
-        );
-      }
-      update(speedMultiplier) {
-        this.progress += this.speed * speedMultiplier;
-        if (this.progress > this.totalLen + 60) this.reset();
-      }
-      draw(ctx) {
-        const base = this.isRed ? [244, 63, 94] : [56, 189, 248];
-        let accum = 0;
-        for (const seg of this.points) {
-          const segLen = Math.sqrt((seg.x2 - seg.x1) ** 2 + (seg.y2 - seg.y1) ** 2);
-          const segStart = accum;
-          const segEnd = accum + segLen;
-          accum += segLen;
-          if (this.progress < segStart) break;
-          const drawFrac = Math.min(1, (this.progress - segStart) / segLen);
-          const ex = seg.x1 + (seg.x2 - seg.x1) * drawFrac;
-          const ey = seg.y1 + (seg.y2 - seg.y1) * drawFrac;
-          const distFromHead = this.progress - segEnd;
-          const fadeTail = distFromHead > 0 ? Math.max(0, 1 - distFromHead / 120) : 1;
+      const x3 = x2 + Math.cos(trace.baseAngle) * (trace.r3 - trace.r2);
+      const y3 = y2 + Math.sin(trace.baseAngle) * (trace.r3 - trace.r2);
 
-          ctx.strokeStyle = `rgba(${base[0]},${base[1]},${base[2]},${this.opacity * fadeTail})`;
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.moveTo(seg.x1, seg.y1);
-          ctx.lineTo(ex, ey);
-          ctx.stroke();
-
-          if (drawFrac < 1 || (drawFrac === 1 && distFromHead < 30)) {
-            ctx.fillStyle = `rgba(${base[0]},${base[1]},${base[2]},${0.9 * fadeTail})`;
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = `rgba(${base[0]},${base[1]},${base[2]},0.8)`;
-            ctx.beginPath();
-            ctx.arc(ex, ey, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-          }
-          if (drawFrac >= 1) {
-            ctx.fillStyle = `rgba(${base[0]},${base[1]},${base[2]},${0.3 * fadeTail})`;
-            ctx.beginPath();
-            ctx.arc(seg.x2, seg.y2, 1.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
+      if (prog < 0.33) {
+        const t = prog / 0.33;
+        return { x: x0 + (x1 - x0) * t, y: y0 + (y1 - y0) * t };
+      } else if (prog < 0.66) {
+        const t = (prog - 0.33) / 0.33;
+        return { x: x1 + (x2 - x1) * t, y: y1 + (y2 - y1) * t };
+      } else {
+        const t = (prog - 0.66) / 0.34;
+        return { x: x2 + (x3 - x2) * t, y: y2 + (y3 - y2) * t };
       }
-    }
+    };
 
-    const surgeRings = Array.from({ length: 8 }, () => {
-      const r = new SurgeRing();
-      r.r = Math.random() * maxRadius;
-      return r;
-    });
-    const arcs = Array.from({ length: 7 }, () => {
-      const a = new ElectricArc();
-      a.life = Math.floor(Math.random() * a.maxLife);
-      return a;
-    });
-    const circuits = Array.from({ length: 18 }, () => {
-      const t = new CircuitTrace();
-      t.progress = Math.random() * t.totalLen;
-      return t;
-    });
-
+    // Master Animation Render Loop
     let rainCounter = 0;
+    const render = (timestamp) => {
+      const curProgress = progressRef.current;
+      const theme = getCurrentStageTheme(curProgress);
+      const surging = isBootingRef.current;
+      const time = timestamp * 0.003;
+      const cx = width / 2;
+      const cy = height / 2;
 
-    const render = () => {
-      const speedMultiplier = isBootingRef.current ? 2.2 : 1.0;
-
-      // 1. Render Matrix Rain (every 2 frames for smooth retro effect)
+      // 1. Render Matrix Digital Rain (every 2 frames for smooth performance)
       rainCounter++;
       if (rainCounter % 2 === 0) {
-        rainCtx.fillStyle = "rgba(5, 7, 17, 0.12)";
+        rainCtx.fillStyle = "rgba(3, 7, 18, 0.12)";
         rainCtx.fillRect(0, 0, width, height);
-        rainCtx.font = fontSize + "px 'JetBrains Mono', monospace";
+        rainCtx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+
         for (let i = 0; i < drops.length; i++) {
-          const text = chars.charAt(Math.floor(Math.random() * chars.length));
-          rainCtx.fillStyle = i % 2 === 0 ? "rgba(244, 63, 94, 0.7)" : "rgba(56, 189, 248, 0.7)";
-          rainCtx.fillText(text, i * fontSize, drops[i] * fontSize);
-          if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
-          drops[i] += isBootingRef.current ? 1.5 : 1;
+          const char = chars[Math.floor(Math.random() * chars.length)];
+          const x = i * fontSize;
+          const y = drops[i] * fontSize;
+
+          const isAlt = i % 2 === 0;
+          rainCtx.fillStyle = isAlt ? theme.primary : theme.secondary;
+          rainCtx.shadowColor = theme.primary;
+          rainCtx.shadowBlur = surging ? 8 : 2;
+
+          rainCtx.fillText(char, x, y);
+
+          const speed = surging ? 1.5 : 0.7;
+          if (y > height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i] += speed;
         }
       }
 
-      // 2. Render Power Surge Canvas
-      surgeCtx.clearRect(0, 0, width, height);
+      // 2. Render Subtle Background PCB Circuit Network
+      circuitCtx.clearRect(0, 0, width, height);
 
-      // Ambient radial core illumination
-      const coreGrad = surgeCtx.createRadialGradient(cx, cy, 0, cx, cy, isBootingRef.current ? 320 : 220);
-      coreGrad.addColorStop(0, isBootingRef.current ? "rgba(244, 63, 94, 0.22)" : "rgba(168, 85, 247, 0.12)");
-      coreGrad.addColorStop(0.3, "rgba(244, 63, 94, 0.06)");
-      coreGrad.addColorStop(0.6, "rgba(56, 189, 248, 0.03)");
-      coreGrad.addColorStop(1, "transparent");
-      surgeCtx.fillStyle = coreGrad;
-      surgeCtx.fillRect(0, 0, width, height);
+      pcbTraces.forEach((trace, idx) => {
+        const x0 = cx + Math.cos(trace.baseAngle) * trace.rStart;
+        const y0 = cy + Math.sin(trace.baseAngle) * trace.rStart;
 
-      // Expand and draw all components
-      for (const ring of surgeRings) {
-        ring.update(speedMultiplier);
-        ring.draw(surgeCtx);
+        const x1 = cx + Math.cos(trace.baseAngle) * trace.r1;
+        const y1 = cy + Math.sin(trace.baseAngle) * trace.r1;
+
+        const x2 = x1 + Math.cos(trace.turnAngle) * (trace.r2 - trace.r1);
+        const y2 = y1 + Math.sin(trace.turnAngle) * (trace.r2 - trace.r1);
+
+        const x3 = x2 + Math.cos(trace.baseAngle) * (trace.r3 - trace.r2);
+        const y3 = y2 + Math.sin(trace.baseAngle) * (trace.r3 - trace.r2);
+
+        const traceColor = idx % 2 === 0 ? theme.primary : theme.secondary;
+
+        // Subtle background hairline copper trace
+        circuitCtx.beginPath();
+        circuitCtx.moveTo(x0, y0);
+        circuitCtx.lineTo(x1, y1);
+        circuitCtx.lineTo(x2, y2);
+        circuitCtx.lineTo(x3, y3);
+        circuitCtx.strokeStyle = surging
+          ? "rgba(255, 255, 255, 0.12)"
+          : "rgba(255, 255, 255, 0.04)";
+        circuitCtx.lineWidth = surging ? 1.5 : 1.0;
+        circuitCtx.stroke();
+
+        // Small micro via test points
+        [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach((pt) => {
+          circuitCtx.beginPath();
+          circuitCtx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+          circuitCtx.fillStyle = surging ? traceColor : "rgba(255, 255, 255, 0.15)";
+          circuitCtx.fill();
+        });
+
+        // Edge terminal pad
+        circuitCtx.beginPath();
+        circuitCtx.arc(x3, y3, surging ? 3.5 : 2.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = surging ? traceColor : "rgba(255, 255, 255, 0.2)";
+        circuitCtx.fill();
+
+        // Smooth glowing electron packet
+        const surgeMultiplier = surging ? 3.5 : 1.0;
+        const prog = ((time * trace.pulseSpeed * surgeMultiplier + trace.pulseOffset) % 100) / 100;
+        const pt = getPcbPoint(cx, cy, trace, prog);
+
+        circuitCtx.beginPath();
+        circuitCtx.arc(pt.x, pt.y, surging ? 4 : 2.5, 0, Math.PI * 2);
+        circuitCtx.fillStyle = traceColor;
+        circuitCtx.shadowColor = traceColor;
+        circuitCtx.shadowBlur = surging ? 14 : 5;
+        circuitCtx.fill();
+      });
+
+      // 3. Render Center Nested Living Liquid Emotion Orb
+      const orbCanvas = hybridOrbCanvasRef.current;
+      if (orbCanvas) {
+        const orbCtx = orbCanvas.getContext("2d");
+        const orbW = orbCanvas.width;
+        const orbH = orbCanvas.height;
+        const ocx = orbW / 2;
+        const ocy = orbH / 2;
+
+        orbCtx.clearRect(0, 0, orbW, orbH);
+
+        const numPoints = 8;
+        const baseRadius = surging ? 28 : 22;
+        const deformation = surging ? 10 : 5;
+
+        orbCtx.beginPath();
+        for (let i = 0; i <= numPoints; i++) {
+          const angle = (i / numPoints) * Math.PI * 2;
+          const wave = Math.sin(angle * 3 + time * (surging ? 7 : 2.5)) * deformation;
+          const r = baseRadius + wave;
+          const ox = ocx + Math.cos(angle) * r;
+          const oy = ocy + Math.sin(angle) * r;
+
+          if (i === 0) orbCtx.moveTo(ox, oy);
+          else orbCtx.lineTo(ox, oy);
+        }
+        orbCtx.closePath();
+
+        const grad = orbCtx.createRadialGradient(ocx, ocy, 3, ocx, ocy, 42);
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.35, theme.primary);
+        grad.addColorStop(0.8, theme.secondary);
+        grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+
+        orbCtx.fillStyle = grad;
+        orbCtx.shadowColor = theme.primary;
+        orbCtx.shadowBlur = surging ? 28 : 14;
+        orbCtx.fill();
       }
-      for (const arc of arcs) {
-        arc.update(speedMultiplier);
-        arc.draw(surgeCtx);
-      }
-      for (const ct of circuits) {
-        ct.update(speedMultiplier);
-        ct.draw(surgeCtx);
+
+      // 4. Update Prismatic Iris Blade Aperture Dilation
+      if (irisBladesRef.current) {
+        const scale = 1.0 + (curProgress / 100) * 0.22;
+        const rotate = (curProgress / 100) * 45;
+        irisBladesRef.current.style.transform = `scale(${scale}) rotate(${rotate}deg)`;
       }
 
       animFrameIdRef.current = requestAnimationFrame(render);
     };
 
-    render();
+    animFrameIdRef.current = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -346,48 +393,106 @@ export function WelcomeHero({ onStart }) {
     };
   }, []);
 
+  const currentTheme = getCurrentStageTheme(progress);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050711] backdrop-blur-2xl overflow-y-auto selection:bg-rose-500 selection:text-white">
-      {/* Layer 0: Dual Red & Blue Matrix Rain Canvas */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#030712] overflow-hidden select-none">
+      {/* Layer 0: Matrix Digital Rain Canvas */}
       <canvas
         ref={rainCanvasRef}
-        className="absolute inset-0 w-full h-full opacity-30 pointer-events-none z-0"
+        className="absolute inset-0 w-full h-full opacity-20 pointer-events-none z-0"
       />
 
-      {/* Layer 1: Full-Screen Circuital Power Surge Canvas */}
+      {/* Layer 1: Subtle Background PCB Circuit Network */}
       <canvas
-        ref={surgeCanvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-1"
+        ref={circuitCanvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-1 opacity-60"
       />
 
-      {/* Ambient Red/Blue Atmospheric Light Wells */}
-      <div className="absolute w-[650px] h-[650px] rounded-full bg-rose-600/15 blur-[180px] pointer-events-none -top-20 -left-20 z-0" />
-      <div className="absolute w-[650px] h-[650px] rounded-full bg-sky-600/15 blur-[180px] pointer-events-none -bottom-20 -right-20 z-0" />
+      {/* CRT Scanline Filter */}
+      <div className="scanlines absolute inset-0 pointer-events-none opacity-25 z-2" />
 
-      {/* Main Glassmorphic Quantum Arc Card */}
-      <div className="relative z-10 w-full max-w-3xl rounded-3xl bg-slate-950/90 border border-white/[0.15] p-8 md:p-12 shadow-[0_0_100px_rgba(244,63,94,0.25),0_0_100px_rgba(56,189,248,0.25)] flex flex-col items-center text-center gap-8 backdrop-blur-2xl">
-        
-        {/* Top Telemetry Header */}
-        <div className="flex items-center justify-between w-full border-b border-white/[0.1] pb-4 text-xs font-mono">
-          <div className="flex items-center gap-2 font-bold">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
-            <span className="text-rose-400 tracking-wider uppercase">RED</span>
-            <span className="text-slate-500">•</span>
-            <span className="text-sky-400 tracking-wider uppercase">BLUE</span>
-            <span className="text-slate-400 font-normal">NEURAL FUSION // MK-85</span>
-          </div>
-          <div className="text-slate-400 text-[11px]">
-            VALENCE: <span className="text-rose-400 font-bold">ACTIVE</span> • AROUSAL:{" "}
-            <span className="text-sky-400 font-bold">SYNCED</span>
-          </div>
-        </div>
+      {/* Dynamic Ambient Glow Blooms */}
+      <div
+        className="absolute w-[800px] h-[800px] rounded-full blur-[200px] pointer-events-none -top-24 -left-24 transition-colors duration-700 z-0"
+        style={{
+          backgroundColor: isBooting
+            ? `${currentTheme.primary}22`
+            : "rgba(56, 189, 248, 0.15)",
+        }}
+      />
+      <div
+        className="absolute w-[800px] h-[800px] rounded-full blur-[200px] pointer-events-none -bottom-24 -right-24 transition-colors duration-700 z-0"
+        style={{
+          backgroundColor: isBooting
+            ? `${currentTheme.secondary}22`
+            : "rgba(59, 130, 246, 0.15)",
+        }}
+      />
 
-        {/* Stark Arc Reactor Turbine with Alternating Red & Blue Coils */}
-        <div className="relative flex items-center justify-center w-64 h-64 my-1">
-          {/* Outermost Segmented Ring */}
+      {/* === FLOATING SPATIAL HOLOGRAPHIC HUD (ZERO BOX / PURE DEPTH) === */}
+      <main className="relative z-10 w-full max-w-2xl flex flex-col items-center text-center gap-6 transition-all duration-300">
+        {/* Top Floating Header Bar */}
+        <header className="flex items-center justify-between w-full border-b border-white/[0.1] pb-3 text-xs font-mono backdrop-blur-sm px-2">
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2.5 h-2.5 rounded-full transition-colors duration-300 shadow-md"
+              style={{
+                backgroundColor: currentTheme.primary,
+                boxShadow: `0 0 10px ${currentTheme.primary}`,
+              }}
+            />
+            <span
+              className="font-bold tracking-wider transition-colors duration-300"
+              style={{
+                color: currentTheme.primary,
+                textShadow: `0 0 20px ${currentTheme.primary}`,
+              }}
+            >
+              REFLECTRA
+            </span>
+            <span className="text-slate-600">/</span>
+            <span
+              className="font-bold tracking-wider transition-colors duration-300"
+              style={{ color: currentTheme.primary }}
+            >
+              {currentTheme.tag}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3 text-[11px] text-slate-400">
+            <span
+              className="font-bold font-mono transition-colors duration-300"
+              style={{ color: currentTheme.primary }}
+            >
+              {`${currentTheme.voltage} // ${currentTheme.state}`}
+            </span>
+            <button
+              onClick={toggleAudio}
+              className="px-2.5 py-0.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 transition flex items-center gap-1.5 cursor-pointer border border-white/[0.1]"
+              title="Toggle Audio Feedback"
+            >
+              {isMuted ? (
+                <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5 text-sky-400" />
+              )}
+              <span className="font-bold text-[10px]">
+                {isMuted ? "AUDIO: OFF" : "AUDIO: ON"}
+              </span>
+            </button>
+          </div>
+        </header>
+
+        {/* Center Prismatic Liquid Core (Floating in Space) */}
+        <section
+          aria-label="Center Core Display"
+          className="relative flex items-center justify-center w-64 h-64 my-1"
+        >
+          {/* Outermost Stator Ring */}
           <svg
             className={`absolute inset-0 w-full h-full pointer-events-none transition-all duration-700 ${
-              isBooting ? "animate-spin [animation-duration:4s]" : "animate-spin-slow"
+              isBooting ? "animate-spin [animation-duration:3.5s]" : "animate-spin-slow"
             }`}
             viewBox="0 0 200 200"
           >
@@ -396,25 +501,29 @@ export function WelcomeHero({ onStart }) {
               cy="100"
               r="94"
               fill="none"
-              stroke="rgba(56, 189, 248, 0.35)"
+              stroke={currentTheme.primary}
               strokeWidth="1.5"
               strokeDasharray="6, 6"
+              opacity="0.4"
             />
             <circle
               cx="100"
               cy="100"
               r="88"
               fill="none"
-              stroke="rgba(244, 63, 94, 0.55)"
-              strokeWidth="3"
-              strokeDasharray="18, 10"
+              stroke={currentTheme.secondary}
+              strokeWidth="2.5"
+              strokeDasharray="20, 10"
+              opacity="0.65"
             />
           </svg>
 
-          {/* Counter-Rotating Middle Turbine with 8 Alternating Magnetic Coils */}
+          {/* Counter-Rotating Rotor Solenoid Coils */}
           <svg
-            className={`absolute inset-4 w-56 h-56 pointer-events-none transition-all duration-700 ${
-              isBooting ? "animate-spin-reverse [animation-duration:2.5s]" : "animate-spin-reverse"
+            className={`absolute inset-2 w-60 h-60 pointer-events-none transition-all duration-700 ${
+              isBooting
+                ? "animate-spin-reverse [animation-duration:2.2s]"
+                : "animate-spin-reverse"
             }`}
             viewBox="0 0 200 200"
           >
@@ -423,123 +532,254 @@ export function WelcomeHero({ onStart }) {
               cy="100"
               r="82"
               fill="none"
-              stroke="rgba(255, 255, 255, 0.3)"
-              strokeWidth="2"
-              strokeDasharray="32, 12"
+              stroke="rgba(255, 255, 255, 0.2)"
+              strokeWidth="1.5"
+              strokeDasharray="24, 12"
             />
-            <g strokeWidth="3.5">
-              <line x1="100" y1="18" x2="100" y2="30" stroke="#f43f5e" />
-              <line x1="100" y1="170" x2="100" y2="182" stroke="#f43f5e" />
-              <line x1="18" y1="100" x2="30" y2="100" stroke="#38bdf8" />
-              <line x1="170" y1="100" x2="182" y2="100" stroke="#38bdf8" />
-              <line x1="42" y1="42" x2="50" y2="50" stroke="#f43f5e" />
-              <line x1="158" y1="158" x2="150" y2="150" stroke="#f43f5e" />
-              <line x1="158" y1="42" x2="150" y2="50" stroke="#38bdf8" />
-              <line x1="42" y1="158" x2="50" y2="150" stroke="#38bdf8" />
+            <g strokeWidth="2.5">
+              <line x1="100" y1="18" x2="100" y2="28" stroke={currentTheme.primary} />
+              <line x1="100" y1="172" x2="100" y2="182" stroke={currentTheme.primary} />
+              <line x1="18" y1="100" x2="28" y2="100" stroke={currentTheme.secondary} />
+              <line x1="172" y1="100" x2="182" y2="100" stroke={currentTheme.secondary} />
+              <line x1="42" y1="42" x2="50" y2="50" stroke={currentTheme.primary} />
+              <line x1="158" y1="158" x2="150" y2="150" stroke={currentTheme.primary} />
+              <line x1="158" y1="42" x2="150" y2="50" stroke={currentTheme.secondary} />
+              <line x1="42" y1="158" x2="50" y2="150" stroke={currentTheme.secondary} />
             </g>
           </svg>
 
-          {/* Pure Radiant Plasma Singularity Core (Zero text inside) */}
-          <div
-            className={`relative w-28 h-28 rounded-full bg-gradient-to-tr from-rose-600 via-purple-600 to-sky-400 flex items-center justify-center transition-all duration-700 ${
-              isBooting
-                ? "scale-115 shadow-[0_0_80px_#f43f5e,0_0_110px_#38bdf8]"
-                : "shadow-[0_0_50px_rgba(244,63,94,0.6),0_0_70px_rgba(56,189,248,0.6)]"
-            }`}
-          >
-            <div
-              className="w-14 h-14 rounded-full"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(192,132,252,0.6) 45%, transparent 75%)",
-              }}
-            />
-          </div>
-        </div>
+          {/* PRISMATIC LIQUID HYBRID CORE */}
+          <div className="relative w-44 h-44 flex items-center justify-center transition-transform duration-300">
+            {/* Outer Prismatic Hexagonal Diffraction Crystals */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none transition-transform duration-300"
+              viewBox="0 0 160 160"
+            >
+              <defs>
+                <linearGradient id="dynGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={currentTheme.primary} />
+                  <stop offset="100%" stopColor={currentTheme.secondary} />
+                </linearGradient>
+                <linearGradient id="dynGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor={currentTheme.secondary} />
+                  <stop offset="100%" stopColor={currentTheme.primary} />
+                </linearGradient>
+              </defs>
 
-        {/* Branding & Subtitle */}
-        <div className="flex flex-col gap-2.5 max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-rose-500/15 border border-rose-400/30 text-rose-300 text-xs font-bold uppercase tracking-wider mx-auto">
-            <Cpu className="w-3.5 h-3.5 text-rose-400" />
-            <span>Deep Learning Track • Adaptive AI Mirror</span>
+              {/* Hexagonal Crystal Facets */}
+              <polygon
+                points="80,10 140,45 140,115 80,150 20,115 20,45"
+                fill="none"
+                stroke="url(#dynGrad1)"
+                strokeWidth="2.5"
+                strokeDasharray="10, 5"
+                opacity="0.9"
+              />
+              <polygon
+                points="80,22 130,50 130,110 80,138 30,110 30,50"
+                fill="none"
+                stroke="url(#dynGrad2)"
+                strokeWidth="2"
+                opacity="0.85"
+              />
+
+              {/* Expanding Prism Aperture Blades */}
+              <g
+                ref={irisBladesRef}
+                className="transition-transform duration-300"
+                style={{ transformOrigin: "80px 80px" }}
+              >
+                <path
+                  d="M80,32 L115,80 L80,128 Z"
+                  fill="url(#dynGrad1)"
+                  fillOpacity="0.3"
+                  stroke={currentTheme.primary}
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M80,32 L45,80 L80,128 Z"
+                  fill="url(#dynGrad2)"
+                  fillOpacity="0.3"
+                  stroke={currentTheme.secondary}
+                  strokeWidth="1.5"
+                />
+                <line
+                  x1="80"
+                  y1="16"
+                  x2="80"
+                  y2="144"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                  opacity="0.85"
+                />
+                <line
+                  x1="16"
+                  y1="80"
+                  x2="144"
+                  y2="80"
+                  stroke="#ffffff"
+                  strokeWidth="1"
+                  opacity="0.85"
+                />
+              </g>
+            </svg>
+
+            {/* Nested Inner Living Liquid Emotion Orb */}
+            <div className="relative w-24 h-24 flex items-center justify-center rounded-full overflow-hidden">
+              <canvas
+                ref={hybridOrbCanvasRef}
+                width={96}
+                height={96}
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Floating Title & Subtitle */}
+        <div className="flex flex-col gap-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.1] text-slate-300 text-xs font-bold uppercase tracking-wider mx-auto backdrop-blur-md">
+            <Cpu className="w-3.5 h-3.5 text-sky-400" />
+            <span>Multi-Agent Biometric Emotion Mirror</span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-rose-400 via-purple-200 to-sky-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-sky-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-2xl">
             REFLECTRA
           </h1>
-          <p className="text-sm md:text-base text-slate-300 leading-relaxed font-medium">
-            Adaptive Multi-Agent Biometric Emotion Mirror with 2D Russell Circumplex Vector Modeling & Empathic Voice Reflection.
+          <p className="text-xs md:text-sm text-slate-300 max-w-lg font-medium leading-relaxed drop-shadow-md">
+            Adaptive Multi-Agent Biometric Mirror with 2D Russell Circumplex Vector
+            Modeling & Empathic Voice Reflection.
           </p>
         </div>
 
-        {/* Diagnostic Terminal or Telemetry Badges */}
+        {/* Diagnostic Power Surge HUD or Feature Tiles */}
         {isBooting ? (
-          <div className="w-full p-4 rounded-2xl bg-slate-950/90 border border-sky-500/40 flex flex-col gap-3 font-mono text-left animate-fade-in shadow-[0_0_30px_rgba(56,189,248,0.2)]">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-sky-400 font-bold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-                POWER SURGE IN PROGRESS
+          <div className="w-full max-w-md flex flex-col gap-2.5 font-mono text-left animate-fade-in">
+            <div className="flex justify-between text-xs font-bold">
+              <span
+                className="flex items-center gap-2 transition-colors duration-300"
+                style={{ color: currentTheme.primary }}
+              >
+                <span
+                  className="w-2 h-2 rounded-full animate-ping"
+                  style={{ backgroundColor: currentTheme.primary }}
+                />
+                ⚡ STAGE {currentTheme.stage}/4: {currentTheme.name}
               </span>
-              <span className="text-emerald-400 font-bold">{progress}% ENERGIZED</span>
+              <span
+                className="font-extrabold transition-colors duration-300"
+                style={{ color: currentTheme.primary }}
+              >
+                {progress}%
+              </span>
             </div>
 
-            {/* Glowing Gradient Progress Bar */}
-            <div className="w-full h-2.5 rounded-full bg-white/[0.08] overflow-hidden">
+            {/* Glowing Gradient Power Surge Bar */}
+            <div className="relative w-full h-3 rounded-full bg-slate-900/80 border border-white/[0.2] overflow-hidden p-0.5 shadow-[0_0_15px_rgba(0,0,0,0.8)] backdrop-blur-md">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-rose-500 via-purple-500 to-sky-400 transition-all duration-75 shadow-[0_0_15px_#38bdf8]"
-                style={{ width: `${progress}%` }}
+                className="h-full rounded-full transition-all duration-75"
+                style={{
+                  width: `${progress}%`,
+                  background: `linear-gradient(90deg, ${currentTheme.primary}, ${currentTheme.secondary})`,
+                  boxShadow: `0 0 15px ${currentTheme.primary}`,
+                }}
               />
             </div>
 
-            <p className="text-xs text-slate-300 italic pt-1">{currentStatus}</p>
+            <p className="text-[11px] text-slate-300 italic pt-0.5 drop-shadow">
+              {currentTheme.status}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
-            <div className="p-3.5 rounded-2xl bg-slate-900/70 border border-white/[0.1] flex flex-col items-center text-center gap-1.5 hover:border-rose-400/40 transition">
-              <Brain className="w-5 h-5 text-rose-400" />
+            <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md flex flex-col items-center text-center gap-1.5 hover:border-sky-400/40 transition shadow-lg">
+              <Brain className="w-5 h-5 text-sky-400" />
               <span className="text-xs font-bold text-slate-200">5-Agent Engine</span>
               <span className="text-[10px] text-slate-400 font-mono">Vision ➔ LLM</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-900/70 border border-white/[0.1] flex flex-col items-center text-center gap-1.5 hover:border-sky-400/40 transition">
-              <Eye className="w-5 h-5 text-sky-400" />
+            <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md flex flex-col items-center text-center gap-1.5 hover:border-purple-400/40 transition shadow-lg">
+              <Eye className="w-5 h-5 text-purple-400" />
               <span className="text-xs font-bold text-slate-200">DeepFace HUD</span>
               <span className="text-[10px] text-slate-400 font-mono">5 Hz Sampling</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-900/70 border border-white/[0.1] flex flex-col items-center text-center gap-1.5 hover:border-purple-400/40 transition">
-              <Compass className="w-5 h-5 text-purple-400" />
+            <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md flex flex-col items-center text-center gap-1.5 hover:border-amber-400/40 transition shadow-lg">
+              <Compass className="w-5 h-5 text-amber-400" />
               <span className="text-xs font-bold text-slate-200">Russell Radar</span>
-              <span className="text-[10px] text-slate-400 font-mono">Valence vs Arousal</span>
+              <span className="text-[10px] text-slate-400 font-mono">Valence/Arousal</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-slate-900/70 border border-white/[0.1] flex flex-col items-center text-center gap-1.5 hover:border-emerald-400/40 transition">
-              <Volume2 className="w-5 h-5 text-emerald-400" />
-              <span className="text-xs font-bold text-slate-200">Living Orb & Voice</span>
-              <span className="text-[10px] text-slate-400 font-mono">Hume AI Style</span>
+            <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md flex flex-col items-center text-center gap-1.5 hover:border-emerald-400/40 transition shadow-lg">
+              <Activity className="w-5 h-5 text-emerald-400" />
+              <span className="text-xs font-bold text-slate-200">Living Orb</span>
+              <span className="text-[10px] text-slate-400 font-mono">Harmonic Fluid</span>
             </div>
           </div>
         )}
 
         {/* Primary Action Button */}
         {!isBooting && (
-          <div className="flex flex-col items-center gap-3 w-full max-w-md">
+          <div className="flex flex-col items-center gap-2.5 w-full max-w-md">
             <button
               onClick={triggerBoot}
-              className="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-rose-600 via-purple-600 to-sky-500 hover:from-rose-500 hover:to-sky-400 shadow-[0_0_40px_rgba(244,63,94,0.5),0_0_40px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-4 rounded-2xl text-base font-black text-white bg-gradient-to-r from-sky-500 via-purple-600 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 shadow-[0_0_50px_rgba(56,189,248,0.55)] transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer border border-white/[0.3] backdrop-blur-lg"
             >
               <Zap className="w-5 h-5 text-amber-300" />
-              <span>⚡ INITIALIZE REFLECTRA</span>
-              <ArrowRight className="w-5 h-5 text-sky-200" />
+              <span className="tracking-wide uppercase">INITIALIZE REFLECTRA</span>
             </button>
 
-            <span className="text-xs font-mono text-slate-400">
-              PRESS <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-rose-300 font-bold">SPACE</kbd> OR <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-sky-300 font-bold">ENTER</kbd> TO ENGAGE DUAL SYSTEM
+            <span className="text-xs font-mono text-slate-400 drop-shadow">
+              PRESS{" "}
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-sky-300 font-bold">
+                SPACE
+              </kbd>{" "}
+              OR{" "}
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-emerald-300 font-bold">
+                ENTER
+              </kbd>{" "}
+              TO ENGAGE
             </span>
           </div>
         )}
 
-      </div>
+        {/* Floating Telemetry Badges Strip */}
+        <footer className="grid grid-cols-3 gap-3 w-full pt-2 text-center font-mono text-xs text-slate-300">
+          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
+            <span className="text-[10px] text-slate-400 block uppercase">CAPACITANCE</span>
+            <span
+              className="font-bold transition-colors duration-300"
+              style={{ color: currentTheme.primary }}
+            >
+              {isBooting
+                ? `${Math.floor(12000 * (progress / 100)).toLocaleString()} µF`
+                : "12,000 µF"}
+            </span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
+            <span className="text-[10px] text-slate-400 block uppercase">BUS FREQUENCY</span>
+            <span
+              className="font-bold transition-colors duration-300"
+              style={{ color: currentTheme.secondary }}
+            >
+              {currentTheme.freq}
+            </span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-900/40 border border-white/[0.08] backdrop-blur-md shadow-lg">
+            <span className="text-[10px] text-slate-400 block uppercase">STATE</span>
+            <span
+              className="font-bold transition-colors duration-300"
+              style={{ color: currentTheme.primary }}
+            >
+              {currentTheme.state}
+            </span>
+          </div>
+        </footer>
+      </main>
     </div>
   );
 }
+
+WelcomeHero.propTypes = {
+  onStart: PropTypes.func.isRequired,
+};
